@@ -84,18 +84,11 @@ const SignupForm = () => {
         formData.email,
         formData.password,
         formData.displayName,
-        formData.role
+        formData.role,
+        formData.departmentId || null
       );
       
-      // If department head, update department
-      if (formData.role === ROLES.DEPARTMENT_HEAD && formData.departmentId) {
-        const { updateProfile } = await import('../../../services/authService');
-        // This would need to be implemented in the auth service
-        // For now, we'll just show a success message
-      }
-      
-      // Redirect will be handled by the AuthContext
-      window.location.href = '/';
+      window.location.replace('/');
     } catch (error) {
       setError(error.message || 'Failed to create account. Please try again.');
     } finally {

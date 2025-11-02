@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { supabase } from '../supabase/supabase';
 import { getCurrentUser } from '../supabase/auth';
 
 const AuthContext = createContext();
@@ -39,25 +38,16 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session from localStorage
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        try {
-          const userWithRole = await getCurrentUser();
-          dispatch({
-            type: 'AUTH_STATE_CHANGED',
-            payload: userWithRole
-          });
-        } catch (error) {
-          console.error('Error fetching user role:', error);
-          dispatch({
-            type: 'AUTH_STATE_CHANGED',
-            payload: session.user
-          });
-        }
-      } else {
+      try {
+        const user = await getCurrentUser();
+        dispatch({
+          type: 'AUTH_STATE_CHANGED',
+          payload: user
+        });
+      } catch (error) {
+        console.error('Error fetching user:', error);
         dispatch({
           type: 'AUTH_STATE_CHANGED',
           payload: null
@@ -66,34 +56,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     getInitialSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          try {
-            const userWithRole = await getCurrentUser();
-            dispatch({
-              type: 'AUTH_STATE_CHANGED',
-              payload: userWithRole
-            });
-          } catch (error) {
-            console.error('Error fetching user role:', error);
-            dispatch({
-              type: 'AUTH_STATE_CHANGED',
-              payload: session.user
-            });
-          }
-        } else {
-          dispatch({
-            type: 'AUTH_STATE_CHANGED',
-            payload: null
-          });
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
   }, []);
 
   // Role checking helpers
@@ -102,13 +64,30 @@ export const AuthProvider = ({ children }) => {
   const isUser = () => state.role === 'user';
   const isGuest = () => !state.isAuthenticated;
 
+  // Refresh auth state (call after login/logout)
+  const refreshAuth = async () => {
+    try {
+      const user = await getCurrentUser();
+      dispatch({
+        type: 'AUTH_STATE_CHANGED',
+        payload: user
+      });
+    } catch (error) {
+      dispatch({
+        type: 'AUTH_STATE_CHANGED',
+        payload: null
+      });
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       ...state,
       isAdmin,
       isDepartmentHead,
       isUser,
-      isGuest
+      isGuest,
+      refreshAuth
     }}>
       {children}
     </AuthContext.Provider>

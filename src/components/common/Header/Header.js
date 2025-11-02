@@ -29,7 +29,7 @@ const Header = () => {
     const { logout } = await import('../../../services/authService');
     try {
       await logout();
-      navigate('/');
+      window.location.replace('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -77,7 +77,7 @@ const Header = () => {
                 <NavDropdown title={
                   <span>
                     <FontAwesomeIcon icon={faUser} className="me-1" />
-                    {user?.user_metadata?.display_name || user?.email || 'User'}
+                    {user?.displayName || user?.email || 'User'}
                   </span>
                 } id="basic-nav-dropdown">
                   <NavDropdown.Item as={Link} to="/profile">
