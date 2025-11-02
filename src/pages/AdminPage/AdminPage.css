@@ -1,0 +1,10 @@
+.admin-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-main {
+  flex-grow: 1;
+  background-color: #f8f9fa;
+}

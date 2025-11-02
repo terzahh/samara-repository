@@ -1,0 +1,74 @@
+.reports {
+  padding: 20px;
+}
+
+.reports h3 {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.report-card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.report-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.report-card .table {
+  margin-bottom: 0;
+}
+
+.report-card .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2D7BA8;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  margin-bottom: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+}

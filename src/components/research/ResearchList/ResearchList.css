@@ -1,0 +1,28 @@
+.research-list {
+  padding: 20px;
+}
+
+.search-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-toggle-btn {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.filter-toggle-btn:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.research-cards {
+  margin-top: 20px;
+}
+
+.research-cards .col-md-4 {
+  margin-bottom: 20px;
+}

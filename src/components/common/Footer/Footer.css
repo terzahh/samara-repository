@@ -1,0 +1,20 @@
+.footer {
+  border-top: 1px solid #e9ecef;
+}
+
+.footer h5 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.footer a {
+  transition: color 0.3s;
+}
+
+.footer a:hover {
+  color: #2D7BA8 !important;
+}
+
+.footer address p {
+  margin-bottom: 0.5rem;
+}

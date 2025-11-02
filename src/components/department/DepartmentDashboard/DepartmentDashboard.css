@@ -1,0 +1,77 @@
+.department-dashboard {
+  padding: 20px;
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.dashboard-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.research-link {
+  color: #2D7BA8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.research-link:hover {
+  text-decoration: underline;
+}
+
+.department-dashboard .card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.department-dashboard .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.department-dashboard .table {
+  margin-bottom: 0;
+}
+
+.department-dashboard .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+}
+
+.department-dashboard .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.department-dashboard .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}
+
+.department-dashboard .btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.department-dashboard .btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.department-dashboard .btn-outline-info {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.department-dashboard .btn-outline-info:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}

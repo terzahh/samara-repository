@@ -1,0 +1,34 @@
+.edit-research .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.edit-research .modal-title {
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.edit-research .form-control:focus {
+  border-color: #2D7BA8;
+  box-shadow: 0 0 0 0.25rem rgba(45, 123, 168, 0.25);
+}
+
+.edit-research .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.edit-research .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}
+
+.edit-research .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.edit-research .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}

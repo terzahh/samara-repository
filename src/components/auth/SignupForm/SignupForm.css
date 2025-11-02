@@ -1,0 +1,36 @@
+.signup-form-card {
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 10px;
+}
+
+.signup-form-card .card-title {
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.signup-form-card .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.signup-form-card .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}
+
+.signup-form-card .form-control:focus {
+  border-color: #2D7BA8;
+  box-shadow: 0 0 0 0.25rem rgba(45, 123, 168, 0.25);
+}
+
+.signup-form-card a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.signup-form-card a:hover {
+  text-decoration: underline;
+}

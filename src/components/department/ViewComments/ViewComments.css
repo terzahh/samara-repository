@@ -1,0 +1,30 @@
+.view-comments .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.view-comments .modal-title {
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.comments-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.comment-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.comment-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 14px;
+}
+
+.comment-card .card-body {
+  padding: 15px;
+}

@@ -1,0 +1,76 @@
+.research-detail {
+  padding: 20px;
+}
+
+.research-detail-card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.research-detail-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.type-badge {
+  font-size: 14px;
+}
+
+.research-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.research-author {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px !important;
+}
+
+.research-meta p {
+  margin-bottom: 5px;
+}
+
+.research-abstract h4 {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.research-abstract p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.research-actions .btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.research-actions .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.research-actions .btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.research-actions .btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.research-detail-card .btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.research-detail-card .btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}

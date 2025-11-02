@@ -1,0 +1,80 @@
+.research-card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.research-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.research-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 15px;
+}
+
+.type-badge {
+  font-size: 12px;
+}
+
+.research-title {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.research-link {
+  color: #2D7BA8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.research-link:hover {
+  color: #1a5d82;
+  text-decoration: underline;
+}
+
+.research-author {
+  font-size: 14px;
+  margin-bottom: 15px !important;
+}
+
+.research-abstract {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+  flex-grow: 1;
+}
+
+.research-meta {
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+
+.research-card .card-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  padding: 10px 15px;
+}
+
+.research-actions .btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.research-actions .btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.research-actions .btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.research-actions .btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+}

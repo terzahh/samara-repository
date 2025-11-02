@@ -1,0 +1,37 @@
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-section {
+  flex-grow: 1;
+  background-color: #f8f9fa;
+}
+
+.signup-container {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+}
+
+.signup-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.signup-subtitle {
+  color: #6c757d;
+  margin-bottom: 30px;
+}
+
+.signup-container a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.signup-container a:hover {
+  text-decoration: underline;
+}

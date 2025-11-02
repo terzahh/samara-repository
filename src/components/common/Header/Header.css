@@ -1,0 +1,72 @@
+.header {
+  margin-bottom: 20px;
+}
+
+.brand-text {
+  font-weight: 700;
+  color: #2D7BA8;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #2D7BA8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.search-input {
+  border-radius: 20px;
+  border: 1px solid #ced4da;
+}
+
+.search-btn {
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.navbar .nav-link {
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar .nav-link:hover {
+  color: #2D7BA8;
+}
+
+.navbar .navbar-brand {
+  color: #2D7BA8;
+  font-weight: 700;
+}
+
+.navbar .navbar-brand:hover {
+  color: #1a5d82;
+}
+
+.navbar .nav-dropdown .dropdown-item {
+  color: #333;
+}
+
+.navbar .nav-dropdown .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #2D7BA8;
+}

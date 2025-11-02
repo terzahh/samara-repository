@@ -1,0 +1,127 @@
+.user-dashboard {
+  padding: 20px;
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.dashboard-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.stats-cards .stat-card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stats-cards .stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(45, 123, 168, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2D7BA8;
+  font-size: 20px;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 0;
+  color: #333;
+}
+
+.stat-label {
+  margin-bottom: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.user-dashboard .card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.user-dashboard .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.user-nav {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.user-nav .nav-link {
+  color: #6c757d;
+  border-radius: 5px;
+  margin-right: 10px;
+  transition: all 0.3s;
+}
+
+.user-nav .nav-link:hover {
+  color: #2D7BA8;
+  background-color: rgba(45, 123, 168, 0.1);
+}
+
+.user-nav .nav-link.active {
+  color: white;
+  background-color: #2D7BA8;
+}
+
+.research-link {
+  color: #2D7BA8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.research-link:hover {
+  text-decoration: underline;
+}
+
+.user-dashboard .table {
+  margin-bottom: 0;
+}
+
+.user-dashboard .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+}
+
+.user-dashboard .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.user-dashboard .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}
+
+.user-dashboard .btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.user-dashboard .btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}

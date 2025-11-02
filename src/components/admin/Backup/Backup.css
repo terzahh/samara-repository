@@ -1,0 +1,42 @@
+.backup {
+  padding: 20px;
+}
+
+.backup h3 {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.backup-card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.backup-card .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.backup-card .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.backup-card .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}
+
+.backup-card .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.backup-card .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}

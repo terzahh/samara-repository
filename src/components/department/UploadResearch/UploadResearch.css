@@ -1,0 +1,24 @@
+.upload-research .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.upload-research .modal-title {
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
+.upload-research .form-control:focus {
+  border-color: #2D7BA8;
+  box-shadow: 0 0 0 0.25rem rgba(45, 123, 168, 0.25);
+}
+
+.upload-research .btn-primary {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.upload-research .btn-primary:hover {
+  background-color: #1a5d82;
+  border-color: #1a5d82;
+}

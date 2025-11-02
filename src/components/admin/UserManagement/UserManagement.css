@@ -1,0 +1,42 @@
+.user-management {
+  padding: 20px;
+}
+
+.user-management h3 {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.user-management .table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-management .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+  font-weight: 600;
+}
+
+.user-management .btn-outline-primary {
+  border-color: #2D7BA8;
+  color: #2D7BA8;
+}
+
+.user-management .btn-outline-primary:hover {
+  background-color: #2D7BA8;
+  border-color: #2D7BA8;
+}
+
+.user-management .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.user-management .modal-title {
+  color: #2D7BA8;
+  font-weight: 600;
+}

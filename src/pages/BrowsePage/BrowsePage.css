@@ -1,0 +1,27 @@
+.browse-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.browse-main {
+  flex-grow: 1;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.browse-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.browse-header h1 {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.browse-header p {
+  color: #6c757d;
+  font-size: 1.1rem;
+}
