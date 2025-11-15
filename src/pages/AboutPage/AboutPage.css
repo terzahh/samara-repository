@@ -1,0 +1,164 @@
+.about-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-title {
+  color: #2D7BA8;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mission-vision-card,
+.objectives-card,
+.policies-card,
+.team-card,
+.info-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.mission-vision-card .card-header,
+.objectives-card .card-header,
+.policies-card .card-header,
+.team-card .card-header {
+  background-color: #2D7BA8;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+
+.icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(45, 123, 168, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2D7BA8;
+  font-size: 24px;
+}
+
+.objective-item {
+  text-align: center;
+  padding: 20px;
+}
+
+.objective-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(45, 123, 168, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: #2D7BA8;
+  font-size: 30px;
+}
+
+.objective-item h4 {
+  color: #2D7BA8;
+  margin-bottom: 15px;
+}
+
+.objective-item p {
+  color: #555;
+  line-height: 1.8;
+}
+
+.policies-card h4 {
+  color: #2D7BA8;
+  margin-bottom: 15px;
+}
+
+.policies-card p {
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.team-intro {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  text-align: justify;
+}
+
+.team-role {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  height: 100%;
+}
+
+.team-role h5 {
+  color: #2D7BA8;
+  margin-bottom: 15px;
+}
+
+.team-role p {
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.contact-info {
+  background-color: #f8f9fa;
+  border-left: 4px solid #2D7BA8;
+}
+
+.contact-info h5 {
+  color: #2D7BA8;
+}
+
+.info-card h4 {
+  color: #2D7BA8;
+  margin-bottom: 15px;
+}
+
+.info-card p {
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.info-card a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.info-card a:hover {
+  /* Underline effect is handled by global App.css a::after */
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .objective-item,
+  .team-role {
+    margin-bottom: 20px;
+  }
+}
+

@@ -92,7 +92,7 @@
 }
 
 .research-link:hover {
-  text-decoration: underline;
+  /* Underline effect is handled by global App.css a::after */
 }
 
 .user-dashboard .table {

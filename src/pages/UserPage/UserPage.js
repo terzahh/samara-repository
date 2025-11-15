@@ -1,7 +1,5 @@
 import React from 'react';
 import { Container, Row, Col, Nav, Tab } from 'react-bootstrap';
-import Header from '../../components/common/Header/Header';
-import Footer from '../../components/common/Footer/Footer';
 import UserDashboard from '../../components/user/UserDashboard/UserDashboard';
 import UserProfile from '../../components/user/UserProfile/UserProfile';
 import ProtectedRoute from '../../components/common/ProtectedRoute/ProtectedRoute';
@@ -11,7 +9,6 @@ import './UserPage.css';
 const UserPage = () => {
   return (
     <div className="user-page">
-      <Header />
       
       <main className="user-main">
         <ProtectedRoute requiredRole={ROLES.USER}>
@@ -46,7 +43,6 @@ const UserPage = () => {
         </ProtectedRoute>
       </main>
       
-      <Footer />
     </div>
   );
 };

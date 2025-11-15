@@ -1,0 +1,68 @@
+.terms-policies-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-title {
+  color: #2D7BA8;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.policy-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.policy-card .card-header {
+  background-color: #2D7BA8;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+
+.policy-card h3 {
+  color: white;
+  margin: 0;
+}
+
+.policy-card h5 {
+  color: #2D7BA8;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.policy-card p {
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+  margin-bottom: 20px;
+}
+
+.policy-card ul {
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.policy-card ul li {
+  margin-bottom: 10px;
+}
+
+.policy-card strong {
+  color: #2D7BA8;
+}
+

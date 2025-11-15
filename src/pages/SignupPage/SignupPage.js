@@ -1,15 +1,11 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import Header from '../../components/common/Header/Header';
-import Footer from '../../components/common/Footer/Footer';
 import SignupForm from '../../components/auth/SignupForm/SignupForm';
 import './SignupPage.css';
 
 const SignupPage = () => {
   return (
     <div className="signup-page">
-      <Header />
       
       <section className="signup-section py-5">
         <Container>
@@ -22,19 +18,12 @@ const SignupPage = () => {
                 </div>
                 
                 <SignupForm />
-                
-                <div className="text-center mt-4">
-                  <p>
-                    Already have an account? <Link to="/login">Login</Link>
-                  </p>
-                </div>
               </div>
             </Col>
           </Row>
         </Container>
       </section>
       
-      <Footer />
     </div>
   );
 };

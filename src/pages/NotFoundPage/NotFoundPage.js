@@ -3,14 +3,11 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import Header from '../../components/common/Header/Header';
-import Footer from '../../components/common/Footer/Footer';
 import './NotFoundPage.css';
 
 const NotFoundPage = () => {
   return (
     <div className="not-found-page">
-      <Header />
       
       <main className="not-found-main">
         <Container>
@@ -32,7 +29,6 @@ const NotFoundPage = () => {
         </Container>
       </main>
       
-      <Footer />
     </div>
   );
 };

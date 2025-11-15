@@ -1,12 +1,19 @@
-import { supabase } from './supabase';
+import { supabase, supabaseForCustomAuth } from './supabase';
 
 export const uploadFile = async (file, path) => {
   try {
-    const { data, error } = await supabase.storage
+    // Use custom auth client for storage operations to avoid RLS issues
+    const { data, error } = await supabaseForCustomAuth.storage
       .from('research-files')
       .upload(path, file);
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error uploading file:', error);
+      if (error.message?.includes('row-level security') || error.message?.includes('permission denied')) {
+        throw new Error('Storage permission denied. Please check Storage Bucket policies for research-files. See RESEARCH_RLS_FIX.md for instructions.');
+      }
+      throw error;
+    }
     return data;
   } catch (error) {
     throw error;
@@ -15,11 +22,18 @@ export const uploadFile = async (file, path) => {
 
 export const updateFile = async (file, path) => {
   try {
-    const { data, error } = await supabase.storage
+    // Use custom auth client for storage operations to avoid RLS issues
+    const { data, error } = await supabaseForCustomAuth.storage
       .from('research-files')
       .update(path, file);
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error updating file:', error);
+      if (error.message?.includes('row-level security') || error.message?.includes('permission denied')) {
+        throw new Error('Storage permission denied. Please check Storage Bucket policies for research-files.');
+      }
+      throw error;
+    }
     return data;
   } catch (error) {
     throw error;
@@ -28,11 +42,18 @@ export const updateFile = async (file, path) => {
 
 export const deleteFile = async (path) => {
   try {
-    const { error } = await supabase.storage
+    // Use custom auth client for storage operations to avoid RLS issues
+    const { error } = await supabaseForCustomAuth.storage
       .from('research-files')
       .remove([path]);
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error deleting file:', error);
+      if (error.message?.includes('row-level security') || error.message?.includes('permission denied')) {
+        throw new Error('Storage permission denied. Please check Storage Bucket policies for research-files.');
+      }
+      throw error;
+    }
     return true;
   } catch (error) {
     throw error;

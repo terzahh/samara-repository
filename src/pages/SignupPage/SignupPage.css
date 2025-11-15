@@ -33,5 +33,5 @@
 }
 
 .signup-container a:hover {
-  text-decoration: underline;
+  /* Underline effect is handled by global App.css a::after */
 }

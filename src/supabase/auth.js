@@ -1,4 +1,19 @@
 import { supabase } from './supabase';
+import * as customAuth from './customAuth';
+
+// Use custom auth instead of Supabase Auth
+export const loginUser = customAuth.loginUser;
+export const registerUser = customAuth.registerUser;
+export const logoutUser = customAuth.logoutUser;
+export const resetPassword = customAuth.resetPassword;
+export const verifyPasswordResetToken = customAuth.verifyPasswordResetToken;
+export const updatePasswordWithToken = customAuth.updatePasswordWithToken;
+export const adminResetUserPassword = customAuth.adminResetUserPassword;
+export const adminGenerateResetLink = customAuth.adminGenerateResetLink;
+export const getCurrentUser = customAuth.getCurrentUser;
+export const updateUserProfile = customAuth.updateUserProfile;
+
+/* OLD SUPABASE AUTH CODE - REPLACED WITH CUSTOM AUTH
 
 export const loginUser = async (email, password) => {
   try {
@@ -321,16 +336,6 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const updateUserProfile = async (userId, updates) => {
-  try {
-    const { error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', userId);
-    
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    throw error;
-  }
-};
+*/
+
+// Keep old code commented for reference

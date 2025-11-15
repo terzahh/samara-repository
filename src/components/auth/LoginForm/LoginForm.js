@@ -48,51 +48,11 @@ const LoginForm = () => {
     setError('');
     
     try {
-      // Start login but don't fail early; in parallel, poll session for up to ~20s
-      const loginPromise = login(formData.email, formData.password)
-        .then(u => ({ user: u, error: null }))
-        .catch(err => ({ user: null, error: err }));
-
-      let session = null;
-      const start = Date.now();
-      for (let i = 0; i < 20; i++) {
-        if (window.supabase) {
-          try {
-            const { data: { session: s } } = await window.supabase.auth.getSession();
-            if (s) { session = s; break; }
-          } catch (_) {
-            // ignore and retry
-          }
-        }
-        // small delay between polls
-        await new Promise(r => setTimeout(r, 1000));
-      }
-
-      const result = await Promise.race([
-        loginPromise,
-        new Promise(resolve => setTimeout(() => resolve({ user: null, error: new Error('Login did not complete in time. Please try again.') }), 30000))
-      ]);
-
-      if (result && result.error) {
-        throw result.error;
-      }
-
-      if (result && result.user) {
-        console.log('Login successful (promise) in', Date.now() - start, 'ms:', result.user);
-        window.location.replace('/');
-        return;
-      }
-
-      if (session) {
-        console.log('Login successful (session detected) in', Date.now() - start, 'ms');
-        window.location.replace('/');
-        return;
-      }
-
-      throw new Error('Login did not complete. Please check your network and try again.');
+      await login(formData.email, formData.password);
+      window.location.replace('/');
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Failed to login. Please check your credentials and try again.');
+      setError(error.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }

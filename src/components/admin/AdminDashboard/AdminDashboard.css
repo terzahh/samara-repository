@@ -12,6 +12,14 @@
   margin-bottom: 5px;
 }
 
+.admin-sidebar .card-header,
+.admin-dashboard .card > .card-header {
+  background: #f5f9fc;
+  border-bottom: 1px solid #e3eef6;
+  color: #2D7BA8;
+  font-weight: 600;
+}
+
 .stats-cards .stat-card {
   border: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -68,29 +76,44 @@
   font-size: 14px;
 }
 
-.admin-nav {
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-bottom: 1px solid #dee2e6;
+.admin-nav-vertical {
+  background-color: #ffffff;
+  padding: 10px;
 }
 
-.admin-nav .nav-link {
-  color: #6c757d;
-  border-radius: 5px;
-  margin-right: 10px;
-  transition: all 0.3s;
+.admin-nav-vertical .nav-link {
+  color: #4f5d69;
+  border-radius: 6px;
+  margin: 6px 10px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
 }
 
-.admin-nav .nav-link:hover {
+.admin-nav-vertical .nav-link:hover {
   color: #2D7BA8;
-  background-color: rgba(45, 123, 168, 0.1);
+  background-color: #eaf4fb;
 }
 
-.admin-nav .nav-link.active {
-  color: white;
-  background-color: #2D7BA8;
+.admin-nav-vertical .nav-link.active {
+  color: #0f2d3f;
+  background-color: #d6ecfb;
+  font-weight: 600;
 }
 
-.admin-nav .nav-link i {
+.admin-nav-vertical .nav-link i {
   margin-right: 8px;
+}
+
+.admin-dashboard .card {
+  border: 1px solid #eaf2f8;
+  border-radius: 10px;
+}
+
+.admin-dashboard .nav-pills .nav-link {
+  border: 1px solid transparent;
+}
+
+.admin-dashboard .nav-pills .nav-link.active {
+  border-color: #b7dcf4;
 }

@@ -19,7 +19,7 @@
 }
 
 .research-link:hover {
-  text-decoration: underline;
+  /* Underline effect is handled by global App.css a::after */
 }
 
 .department-dashboard .card {
@@ -31,7 +31,7 @@
 .department-dashboard .card-header {
   background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
-  color: #2D7BA8;
+  /* color: #2D7BA8; */
   font-weight: 600;
 }
 
@@ -74,4 +74,39 @@
 .department-dashboard .btn-outline-info:hover {
   background-color: #17a2b8;
   border-color: #17a2b8;
+  color: white;
+}
+
+.department-dashboard .btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.department-dashboard .btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.department-dashboard .btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.department-dashboard .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.department-dashboard .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.department-dashboard .badge:hover {
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }

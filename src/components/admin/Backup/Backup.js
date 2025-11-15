@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, Alert, ProgressBar, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faUpload, faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { createBackup, restoreBackup } from '../../../supabase/backup';
 import Loading from '../../common/Loading/Loading';
 import './Backup.css';
 
@@ -18,28 +19,30 @@ const Backup = () => {
     setSuccess('');
     
     try {
-      // Simulate backup process with progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200));
-        setProgress(i);
-      }
+      // Create backup with progress callback
+      const progressCallback = (progress) => {
+        setProgress(progress);
+      };
       
-      setSuccess('Backup created successfully!');
+      const backupBlob = await createBackup(progressCallback);
       
-      // In a real implementation, this would download the backup file
-      // For now, we'll just simulate it
-      setTimeout(() => {
-        const link = document.createElement('a');
-        link.href = '#';
-        link.download = `samara-repository-backup-${new Date().toISOString().split('T')[0]}.zip`;
-        link.click();
-      }, 1000);
+      // Create download link
+      const url = URL.createObjectURL(backupBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `samara-repository-backup-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      setSuccess('Backup created and downloaded successfully!');
     } catch (error) {
       console.error('Error creating backup:', error);
-      setError('Failed to create backup. Please try again.');
+      setError(error.message || 'Failed to create backup. Please try again.');
     } finally {
       setLoading(false);
-      setProgress(0);
+      setTimeout(() => setProgress(0), 2000);
     }
   };
   
@@ -47,25 +50,35 @@ const Backup = () => {
     const file = event.target.files[0];
     if (!file) return;
     
+    // Confirm restore action
+    if (!window.confirm('Are you sure you want to restore from this backup? This will replace all current data. This action cannot be undone.')) {
+      event.target.value = '';
+      return;
+    }
+    
     setLoading(true);
     setProgress(0);
     setError('');
     setSuccess('');
     
     try {
-      // Simulate restore process with progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200));
-        setProgress(i);
-      }
+      // Restore backup with progress callback
+      const progressCallback = (progress) => {
+        setProgress(progress);
+      };
       
-      setSuccess('Backup restored successfully!');
+      await restoreBackup(file, progressCallback);
+      
+      setSuccess('Backup restored successfully! The page will reload in 3 seconds.');
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } catch (error) {
       console.error('Error restoring backup:', error);
-      setError('Failed to restore backup. Please try again.');
+      setError(error.message || 'Failed to restore backup. Please try again.');
     } finally {
       setLoading(false);
-      setProgress(0);
+      setTimeout(() => setProgress(0), 2000);
       // Reset the file input
       event.target.value = '';
     }

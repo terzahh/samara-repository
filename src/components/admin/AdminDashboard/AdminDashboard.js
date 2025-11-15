@@ -7,13 +7,17 @@ import {
   faCog, 
   faDatabase,
   faFileAlt,
-  faComments
+  faComments,
+  faUserCheck,
+  faUserTimes
 } from '@fortawesome/free-solid-svg-icons';
 import UserManagement from '../UserManagement/UserManagement';
 import Reports from '../Reports/Reports';
 import Settings from '../Settings/Settings';
 import Backup from '../Backup/Backup';
+import PendingApprovals from '../PendingApprovals/PendingApprovals';
 import { getSystemStats } from '../../../supabase/database';
+import { formatFileSize } from '../../../utils/helpers';
 import Loading from '../../common/Loading/Loading';
 import './AdminDashboard.css';
 
@@ -30,7 +34,9 @@ const AdminDashboard = () => {
     conferencePaperCount: 0,
     projectReportCount: 0,
     publicResearchCount: 0,
-    restrictedResearchCount: 0
+    restrictedResearchCount: 0,
+    commentCount: 0,
+    storageSizeBytes: 0
   });
   const [loading, setLoading] = useState(true);
   
@@ -60,7 +66,75 @@ const AdminDashboard = () => {
         <p className="text-muted">Manage users, content, and system settings</p>
       </div>
       
-      <Row className="stats-cards mb-4">
+      <Tab.Container id="admin-tabs" defaultActiveKey="users">
+        <Row>
+          <Col md={3} className="mb-3">
+            <Card className="admin-sidebar">
+              <Card.Header as="h5">Navigation</Card.Header>
+              <Card.Body className="p-0">
+                <Nav variant="pills" className="flex-column admin-nav-vertical">
+                  <Nav.Item>
+                    <Nav.Link eventKey="users">
+                      <FontAwesomeIcon icon={faUsers} className="me-2" />
+                      User Management
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="approvals">
+                      <FontAwesomeIcon icon={faUserCheck} className="me-2" />
+                      Pending Approvals
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="reports">
+                      <FontAwesomeIcon icon={faChartBar} className="me-2" />
+                      Reports
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="settings">
+                      <FontAwesomeIcon icon={faCog} className="me-2" />
+                      Settings
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="backup">
+                      <FontAwesomeIcon icon={faDatabase} className="me-2" />
+                      Backup & Restore
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={9}>
+            <Card>
+              <Card.Header as="h5">Management</Card.Header>
+              <Card.Body className="p-0">
+                <Tab.Content className="p-4">
+                  <Tab.Pane eventKey="users">
+                    <UserManagement />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="approvals">
+                    <PendingApprovals />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="reports">
+                    <Reports />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="settings">
+                    <Settings />
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="backup">
+                    <Backup />
+                  </Tab.Pane>
+                </Tab.Content>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Tab.Container>
+      
+      <Row className="stats-cards mb-4 mt-4">
         <Col md={3} className="mb-3">
           <Card className="stat-card">
             <Card.Body className="d-flex align-items-center">
@@ -96,7 +170,7 @@ const AdminDashboard = () => {
                 <FontAwesomeIcon icon={faComments} />
               </div>
               <div>
-                <h3 className="stat-number">0</h3>
+                <h3 className="stat-number">{stats.commentCount || 0}</h3>
                 <p className="stat-label">Comments</p>
               </div>
             </Card.Body>
@@ -110,7 +184,11 @@ const AdminDashboard = () => {
                 <FontAwesomeIcon icon={faDatabase} />
               </div>
               <div>
-                <h3 className="stat-number">0 GB</h3>
+                <h3 className="stat-number">
+                  {stats.storageSizeBytes > 0 
+                    ? formatFileSize(stats.storageSizeBytes)
+                    : '0 GB'}
+                </h3>
                 <p className="stat-label">Storage Used</p>
               </div>
             </Card.Body>
@@ -149,58 +227,6 @@ const AdminDashboard = () => {
                   <p className="research-type-label">Public</p>
                 </Col>
               </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      
-      <Row>
-        <Col md={12}>
-          <Card>
-            <Card.Header as="h5">System Management</Card.Header>
-            <Card.Body className="p-0">
-              <Tab.Container id="admin-tabs" defaultActiveKey="users">
-                <Nav variant="pills" className="admin-nav">
-                  <Nav.Item>
-                    <Nav.Link eventKey="users">
-                      <FontAwesomeIcon icon={faUsers} className="me-2" />
-                      User Management
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="reports">
-                      <FontAwesomeIcon icon={faChartBar} className="me-2" />
-                      Reports
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="settings">
-                      <FontAwesomeIcon icon={faCog} className="me-2" />
-                      Settings
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="backup">
-                      <FontAwesomeIcon icon={faDatabase} className="me-2" />
-                      Backup & Restore
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-                <Tab.Content className="p-4">
-                  <Tab.Pane eventKey="users">
-                    <UserManagement />
-                  </Tab.Pane>
-                  <Tab.Pane eventKey="reports">
-                    <Reports />
-                  </Tab.Pane>
-                  <Tab.Pane eventKey="settings">
-                    <Settings />
-                  </Tab.Pane>
-                  <Tab.Pane eventKey="backup">
-                    <Backup />
-                  </Tab.Pane>
-                </Tab.Content>
-              </Tab.Container>
             </Card.Body>
           </Card>
         </Col>

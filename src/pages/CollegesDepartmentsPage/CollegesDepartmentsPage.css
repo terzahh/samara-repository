@@ -1,0 +1,176 @@
+.colleges-departments-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-title {
+  color: #2D7BA8;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.colleges-accordion {
+  margin-bottom: 30px;
+}
+
+.colleges-accordion .accordion-item {
+  border: none;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.colleges-accordion .accordion-header {
+  background-color: #2D7BA8;
+  color: white;
+}
+
+.colleges-accordion .accordion-button {
+  background-color: #2D7BA8;
+  color: white;
+  border: none;
+  padding: 20px;
+  font-weight: 600;
+}
+
+.colleges-accordion .accordion-button:not(.collapsed) {
+  background-color: #1a5d82;
+  color: white;
+  box-shadow: none;
+}
+
+.colleges-accordion .accordion-button:focus {
+  box-shadow: none;
+  border: none;
+}
+
+.college-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.college-name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.contact-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #2D7BA8;
+}
+
+.contact-card h5 {
+  color: #2D7BA8;
+}
+
+.contact-card a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.contact-card a:hover {
+  /* Underline effect is handled by global App.css a::after */
+}
+
+.programs-section {
+  margin-bottom: 30px;
+}
+
+.programs-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2D7BA8;
+}
+
+.department-card,
+.program-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.department-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.department-name {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.research-count {
+  margin-bottom: 10px;
+}
+
+.program-card {
+  background-color: #f8f9fa;
+}
+
+.program-card .card-text {
+  color: #555;
+  font-weight: 500;
+}
+
+.browse-all-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2D7BA8 0%, #1a5d82 100%);
+  color: white;
+}
+
+.browse-all-card h3 {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.browse-all-card p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+
+.browse-all-card .btn-primary {
+  background-color: white;
+  color: #2D7BA8;
+  border: none;
+  font-weight: 600;
+}
+
+.browse-all-card .btn-primary:hover {
+  background-color: #f8f9fa;
+  color: #1a5d82;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .college-name {
+    font-size: 1.1rem;
+  }
+  
+  .department-card,
+  .program-card {
+    margin-bottom: 15px;
+  }
+}
+
