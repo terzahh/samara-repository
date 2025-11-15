@@ -6,6 +6,10 @@ export const loginUser = customAuth.loginUser;
 export const registerUser = customAuth.registerUser;
 export const logoutUser = customAuth.logoutUser;
 export const resetPassword = customAuth.resetPassword;
+export const verifyPasswordResetToken = customAuth.verifyPasswordResetToken;
+export const updatePasswordWithToken = customAuth.updatePasswordWithToken;
+export const adminResetUserPassword = customAuth.adminResetUserPassword;
+export const adminGenerateResetLink = customAuth.adminGenerateResetLink;
 export const getCurrentUser = customAuth.getCurrentUser;
 export const updateUserProfile = customAuth.updateUserProfile;
 

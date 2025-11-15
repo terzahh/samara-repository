@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Alert, Button, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { useSearchParams } from 'react-router-dom';
 import ResearchCard from '../ResearchCard/ResearchCard';
 import SearchBar from '../SearchBar/SearchBar';
 import FilterPanel from '../FilterPanel/FilterPanel';
 import { useResearch } from '../../../hooks/useResearch';
 import { usePagination } from '../../../hooks/usePagination';
+import { useAuth } from '../../../hooks/useAuth';
+import { ACCESS_LEVELS } from '../../../utils/constants';
 import Loading from '../../common/Loading/Loading';
 import './ResearchList.css';
 
@@ -16,21 +19,46 @@ const ResearchList = () => {
     loading, 
     searchTerm, 
     filters, 
-    totalCount,
     totalPages,
     fetchResearchList, 
     setSearchTerm, 
     setFilters 
   } = useResearch();
   
+  const { isAuthenticated } = useAuth();
   const { currentPage, goToPage } = usePagination(1, 10);
   const [showFilters, setShowFilters] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
+  
+  // Filter research based on authentication status
+  // Guests can only see public files, authenticated users can see all
+  const filteredResearch = isAuthenticated 
+    ? researchList 
+    : researchList.filter(r => r.access_level === ACCESS_LEVELS.PUBLIC);
+  
+  // Read department parameter from URL and set filter
+  useEffect(() => {
+    const departmentParam = searchParams.get('department');
+    if (departmentParam && departmentParam !== filters.department) {
+      setFilters({ department: departmentParam });
+    }
+    // Mark filters as initialized after applying URL param (or confirming none)
+    setFiltersInitialized(true);
+  }, [searchParams, setFilters, filters.department]);
   
   useEffect(() => {
+    if (!filtersInitialized) return;
     fetchResearchList(currentPage, true);
-    setHasSearched(true);
-  }, [currentPage, searchTerm, filters]);
+  }, [filtersInitialized, currentPage, searchTerm, filters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mark search as completed when loading flips to false
+  useEffect(() => {
+    if (!loading) {
+      setHasSearched(true);
+    }
+  }, [loading]);
   
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -78,15 +106,17 @@ const ResearchList = () => {
       
       {loading && !hasSearched ? (
         <Loading message="Loading research..." />
-      ) : researchList.length === 0 && hasSearched ? (
+      ) : filteredResearch.length === 0 && hasSearched ? (
         <Alert variant="info" className="text-center">
           <FontAwesomeIcon icon={faSearch} className="me-2" />
-          No research found matching your criteria.
+          {!isAuthenticated 
+            ? 'No public research found. Please log in to access restricted research.'
+            : 'No research found matching your criteria.'}
         </Alert>
       ) : (
         <>
           <Row className="research-cards">
-            {researchList.map(research => (
+            {filteredResearch.map(research => (
               <Col key={research.id} md={4} className="mb-4">
                 <ResearchCard research={research} />
               </Col>

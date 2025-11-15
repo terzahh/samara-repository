@@ -82,8 +82,8 @@ export const ResearchProvider = ({ children }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     
     try {
-      if (state.searchTerm || Object.values(state.filters).some(filter => filter !== '' && filter !== 'all')) {
-        // Search with filters
+      if (state.searchTerm && state.searchTerm.trim() !== '') {
+        // Search (with filters if provided)
         const results = await searchResearch(state.searchTerm, state.filters);
         dispatch({ 
           type: 'SET_RESEARCH_LIST', 
@@ -94,7 +94,7 @@ export const ResearchProvider = ({ children }) => {
           }
         });
       } else {
-        // Get all research with pagination
+        // Always use paginated fetch when no search term (respect filters like department)
         const { research, totalCount, totalPages } = await getAllResearch(
           page, 
           state.pagination.itemsPerPage, 

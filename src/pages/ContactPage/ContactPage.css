@@ -1,0 +1,106 @@
+.contact-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-title {
+  color: #2D7BA8;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.contact-form-card,
+.contact-info-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  height: 100%;
+}
+
+.contact-form-card .card-header,
+.contact-info-card .card-header {
+  background-color: #2D7BA8;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.contact-icon {
+  font-size: 24px;
+  color: #2D7BA8;
+  margin-right: 15px;
+  margin-top: 5px;
+}
+
+.contact-info-item h5 {
+  color: #2D7BA8;
+  margin-bottom: 10px;
+}
+
+.contact-info-item p {
+  color: #555;
+  line-height: 1.8;
+}
+
+.contact-info-item a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.contact-info-item a:hover {
+  /* Underline effect is handled by global App.css a::after */
+}
+
+.social-media h5 {
+  color: #2D7BA8;
+  margin-bottom: 15px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #2D7BA8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.social-icon:hover {
+  background-color: #1a5d82;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .contact-info-item {
+    flex-direction: column;
+  }
+  
+  .contact-icon {
+    margin-bottom: 10px;
+  }
+}
+

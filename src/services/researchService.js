@@ -5,6 +5,7 @@ import {
   addComment 
 } from '../supabase/database';
 import { uploadFile, updateFile, deleteFile, createSignedUrl } from '../supabase/storage';
+import { supabase } from '../supabase/supabase';
 
 export const createResearch = async (researchData, file) => {
   try {
@@ -20,9 +21,9 @@ export const createResearch = async (researchData, file) => {
       if (researchData.access_level === 'restricted') {
         fileUrl = await createSignedUrl(filePath, 31536000); // 1 year expiry
       } else {
-        // For public files, we'll use the public URL
-        const { getPublicUrl } = await import('../supabase/storage');
-        fileUrl = getPublicUrl(filePath);
+        // For public files, use the public URL
+        const { data } = supabase.storage.from('research-files').getPublicUrl(filePath);
+        fileUrl = data.publicUrl;
       }
       
       researchData.file_url = fileUrl;
@@ -56,9 +57,9 @@ export const editResearch = async (id, researchData, file) => {
       if (researchData.access_level === 'restricted') {
         fileUrl = await createSignedUrl(filePath, 31536000); // 1 year expiry
       } else {
-        // For public files, we'll use the public URL
-        const { getPublicUrl } = await import('../supabase/storage');
-        fileUrl = getPublicUrl(filePath);
+        // For public files, use the public URL
+        const { data } = supabase.storage.from('research-files').getPublicUrl(filePath);
+        fileUrl = data.publicUrl;
       }
       
       researchData.file_url = fileUrl;
@@ -100,8 +101,8 @@ export const getDownloadUrl = async (research) => {
   try {
     if (research.access_level === 'public') {
       // For public files, return the public URL
-      const { getPublicUrl } = await import('../supabase/storage');
-      return getPublicUrl(research.file_path);
+      const { data } = supabase.storage.from('research-files').getPublicUrl(research.file_path);
+      return data.publicUrl;
     } else {
       // For restricted files, create a new signed URL
       return await createSignedUrl(research.file_path, 3600); // 1 hour expiry

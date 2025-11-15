@@ -1,9 +1,16 @@
 .login-form-card {
   max-width: 450px;
   margin: 0 auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-base);
+  background: var(--bg-primary);
+}
+
+.login-form-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
 }
 
 .login-form-card .card-title {
@@ -12,18 +19,64 @@
 }
 
 .login-form-card .btn-primary {
-  background-color: #2D7BA8;
-  border-color: #2D7BA8;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  border: none;
+  color: var(--text-white);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-colored);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-form-card .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
 .login-form-card .btn-primary:hover {
-  background-color: #1a5d82;
-  border-color: #1a5d82;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-colored-lg);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+}
+
+.login-form-card .btn-primary:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.login-form-card .btn-primary:active {
+  transform: translateY(-1px) scale(1);
+}
+
+.login-form-card .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-form-card .form-control {
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  padding: var(--spacing-md);
+  transition: all var(--transition-base);
 }
 
 .login-form-card .form-control:focus {
-  border-color: #2D7BA8;
-  box-shadow: 0 0 0 0.25rem rgba(45, 123, 168, 0.25);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(45, 123, 168, 0.15);
+  outline: none;
+  transform: translateY(-1px);
 }
 
 .login-form-card a {
@@ -31,6 +84,4 @@
   text-decoration: none;
 }
 
-.login-form-card a:hover {
-  text-decoration: underline;
-}
+/* Underline effect is handled by global App.css a::after */

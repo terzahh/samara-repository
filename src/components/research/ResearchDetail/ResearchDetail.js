@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Badge, Button, Alert, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faComment, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faComment, faShare, faBookmark } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import { useResearch } from '../../../hooks/useResearch';
 import { useAuth } from '../../../hooks/useAuth';
 import { formatDate, getResearchTypeLabel } from '../../../utils/helpers';
 import { ACCESS_LEVELS } from '../../../utils/constants';
 import { getDownloadUrl } from '../../../services/researchService';
+import { trackDownload, addBookmark, removeBookmark, isBookmarked } from '../../../supabase/database';
 import CommentSection from '../CommentSection/CommentSection';
 import Loading from '../../common/Loading/Loading';
 import './ResearchDetail.css';
@@ -15,23 +16,32 @@ import './ResearchDetail.css';
 const ResearchDetail = () => {
   const { id } = useParams();
   const { currentResearch, loading, fetchResearchById, fetchComments } = useResearch();
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [error, setError] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarking, setBookmarking] = useState(false);
   
   useEffect(() => {
     if (id) {
       fetchResearchById(id)
-        .then(() => {
-          fetchComments(id);
-        })
         .catch(error => {
           console.error('Error fetching research:', error);
           setError('Failed to load research. Please try again.');
         });
+      // Don't fetch comments here - let CommentSection fetch when it mounts
     }
-  }, [id, fetchResearchById, fetchComments]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  useEffect(() => {
+    // Check if research is bookmarked
+    if (id && isAuthenticated && user?.id) {
+      isBookmarked(user.id, id)
+        .then(setBookmarked)
+        .catch(() => setBookmarked(false));
+    }
+  }, [id, isAuthenticated, user?.id]);
   
   const getAccessLevelBadgeVariant = (accessLevel) => {
     return accessLevel === ACCESS_LEVELS.PUBLIC ? 'success' : 'warning';
@@ -52,12 +62,12 @@ const ResearchDetail = () => {
   };
   
   const canComment = () => {
-    if (!isAuthenticated) return false;
-    
-    // Public research allows comments from all authenticated users
-    if (currentResearch.access_level === ACCESS_LEVELS.PUBLIC) return true;
-    
-    // Restricted research allows comments from all authenticated users
+    // All authenticated users can write comments
+    return isAuthenticated;
+  };
+
+  const canViewComments = () => {
+    // Everyone can view comments (guests can view, authenticated users can view and write)
     return true;
   };
   
@@ -83,6 +93,16 @@ const ResearchDetail = () => {
     try {
       const downloadUrl = await getDownloadUrl(currentResearch);
       
+      // Track download if user is authenticated
+      if (isAuthenticated && user?.id) {
+        try {
+          await trackDownload(user.id, currentResearch.id);
+        } catch (trackError) {
+          console.error('Error tracking download:', trackError);
+          // Don't block download if tracking fails
+        }
+      }
+      
       // Create a temporary link and trigger download
       const link = document.createElement('a');
       link.href = downloadUrl;
@@ -95,6 +115,30 @@ const ResearchDetail = () => {
       alert('Failed to download file. Please try again.');
     } finally {
       setDownloading(false);
+    }
+  };
+  
+  const handleBookmark = async () => {
+    if (!isAuthenticated || !user?.id || !id) {
+      alert('Please log in to bookmark research.');
+      return;
+    }
+    
+    setBookmarking(true);
+    
+    try {
+      if (bookmarked) {
+        await removeBookmark(user.id, id);
+        setBookmarked(false);
+      } else {
+        await addBookmark(user.id, id);
+        setBookmarked(true);
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      alert('Failed to update bookmark. Please try again.');
+    } finally {
+      setBookmarking(false);
     }
   };
   
@@ -132,6 +176,19 @@ const ResearchDetail = () => {
           </div>
           
           <div className="research-actions">
+            {isAuthenticated && (
+              <Button 
+                variant={bookmarked ? "warning" : "outline-warning"} 
+                size="sm"
+                onClick={handleBookmark}
+                disabled={bookmarking}
+                className="me-2"
+              >
+                <FontAwesomeIcon icon={faBookmark} className={bookmarked ? "me-1" : "me-1"} style={bookmarked ? { fill: 'currentColor' } : {}} />
+                {bookmarking ? '...' : (bookmarked ? 'Bookmarked' : 'Bookmark')}
+              </Button>
+            )}
+            
             <Button 
               variant="outline-secondary" 
               size="sm"
@@ -184,7 +241,7 @@ const ResearchDetail = () => {
         
         <Card.Footer className="d-flex justify-content-between align-items-center">
           <div>
-            {canComment() && (
+            {canViewComments() && (
               <Button 
                 variant="outline-primary" 
                 onClick={() => setShowComments(!showComments)}
@@ -201,7 +258,7 @@ const ResearchDetail = () => {
         </Card.Footer>
       </Card>
       
-      {showComments && canComment() && (
+      {showComments && canViewComments() && (
         <div className="mt-4">
           <CommentSection researchId={currentResearch.id} />
         </div>

@@ -21,13 +21,26 @@ const fetchWithTimeout = (resource, options = {}) => {
     .finally(() => clearTimeout(id));
 };
 
+// Create a single Supabase client instance to avoid multiple GoTrueClient warnings
+// Since we're using custom auth, we don't need Supabase Auth, but the client still initializes it
+// Using a single instance prevents conflicts
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     fetch: (url, opts) => fetchWithTimeout(url, { ...opts, timeout: 30000 })
+  },
+  auth: {
+    persistSession: false, // Don't persist Supabase Auth sessions
+    autoRefreshToken: false, // Don't auto-refresh tokens
+    detectSessionInUrl: false // Don't detect sessions in URL
   }
 });
 
-// Expose for debugging/session checks in Console
+// Export the same instance with an alias for custom auth to maintain compatibility
+// This avoids creating multiple GoTrueClient instances
+export const supabaseForCustomAuth = supabase;
+
+// Expose for debugging
 if (typeof window !== 'undefined') {
   window.supabase = supabase;
+  window.supabaseForCustomAuth = supabaseForCustomAuth;
 }

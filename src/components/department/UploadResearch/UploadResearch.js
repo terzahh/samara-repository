@@ -4,9 +4,11 @@ import { createResearch } from '../../../services/researchService';
 import { RESEARCH_TYPES, ACCESS_LEVELS } from '../../../utils/constants';
 import { validateResearchForm } from '../../../utils/validators';
 import { getAllDepartments } from '../../../supabase/database';
+import { useAuth } from '../../../hooks/useAuth';
 import './UploadResearch.css';
 
 const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -21,7 +23,9 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -34,7 +38,19 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
     };
     
     fetchDepartments();
-  }, []);
+    
+    // Load draft from localStorage
+    const draftKey = `research_draft_${user?.id || 'anonymous'}`;
+    const savedDraft = localStorage.getItem(draftKey);
+    if (savedDraft) {
+      try {
+        const draftData = JSON.parse(savedDraft);
+        setFormData(draftData);
+      } catch (error) {
+        console.error('Error loading draft:', error);
+      }
+    }
+  }, [user?.id]);
   
   useEffect(() => {
     if (departmentId) {
@@ -65,6 +81,26 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
     return isValid;
   };
   
+  const handleSaveDraft = async () => {
+    setSavingDraft(true);
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      // Save draft to localStorage
+      const draftKey = `research_draft_${user?.id || 'anonymous'}`;
+      localStorage.setItem(draftKey, JSON.stringify(formData));
+      
+      setSuccessMessage('Draft saved successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      setError('Failed to save draft. Please try again.');
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -77,15 +113,20 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
     
     setLoading(true);
     setError('');
+    setSuccessMessage('');
     
     try {
       const researchData = {
         ...formData,
-        uploaded_by: 'currentUserId', // This would come from auth context
-        approved: false // Department heads can upload without approval
+        uploaded_by: user?.id || null,
+        approved: true // Auto-approve for now (can be changed based on role)
       };
       
       await createResearch(researchData, file);
+      
+      // Clear draft from localStorage
+      const draftKey = `research_draft_${user?.id || 'anonymous'}`;
+      localStorage.removeItem(draftKey);
       
       // Reset form
       setFormData({
@@ -120,6 +161,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
       </Modal.Header>
       <Modal.Body>
         {error && <Alert variant="danger">{error}</Alert>}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
         
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="title">
@@ -273,17 +315,19 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               Accepted formats: PDF, DOC, DOCX (Max size: 10MB)
             </Form.Text>
           </Form.Group>
-          
-          <div className="d-grid gap-2">
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Uploading...' : 'Upload Research'}
-            </Button>
-          </div>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
           Cancel
+        </Button>
+        <Button 
+          variant="outline-secondary" 
+          onClick={handleSaveDraft} 
+          disabled={savingDraft}
+          className="me-2"
+        >
+          {savingDraft ? 'Saving...' : 'Save Draft'}
         </Button>
         <Button variant="primary" onClick={handleSubmit} disabled={loading}>
           {loading ? 'Uploading...' : 'Upload Research'}

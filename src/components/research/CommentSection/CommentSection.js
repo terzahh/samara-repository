@@ -3,25 +3,52 @@ import { Card, Form, Button, Alert, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../../hooks/useAuth';
-import { useResearch } from '../../../hooks/useResearch';
 import { createComment } from '../../../services/researchService';
+import { getComments } from '../../../supabase/database';
 import { formatDate } from '../../../utils/helpers';
 import Loading from '../../common/Loading/Loading';
 import './CommentSection.css';
 
 const CommentSection = ({ researchId }) => {
   const { user } = useAuth();
-  const { comments, loading, fetchComments } = useResearch();
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [comments, setComments] = useState([]);
   
+  // Fetch comments using local state only - no global context to prevent conflicts
   useEffect(() => {
-    if (researchId) {
-      fetchComments(researchId);
-    }
-  }, [researchId, fetchComments]);
+    if (!researchId) return;
+    
+    let isMounted = true;
+    setLoading(true);
+    
+    const loadComments = async () => {
+      try {
+        const fetchedComments = await getComments(researchId);
+        if (isMounted) {
+          setComments(fetchedComments || []);
+        }
+      } catch (err) {
+        console.error('Error loading comments:', err);
+        if (isMounted) {
+          setComments([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadComments();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [researchId]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,11 +76,24 @@ const CommentSection = ({ researchId }) => {
       setNewComment('');
       setSuccess('Comment added successfully!');
       
-      // Refresh comments
-      fetchComments(researchId);
+      // Refresh comments locally
+      setLoading(true);
+      try {
+        const refreshedComments = await getComments(researchId);
+        setComments(refreshedComments || []);
+      } catch (err) {
+        console.error('Error refreshing comments:', err);
+      } finally {
+        setLoading(false);
+      }
     } catch (error) {
       console.error('Error adding comment:', error);
-      setError('Failed to add comment. Please try again.');
+      // Show more specific error message
+      if (error.message?.includes('Row Level Security') || error.message?.includes('Permission denied')) {
+        setError('Permission denied. Please check your authentication and RLS policies.');
+      } else {
+        setError(error.message || 'Failed to add comment. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -63,7 +103,7 @@ const CommentSection = ({ researchId }) => {
     <Card className="comment-section">
       <Card.Header as="h5">
         <FontAwesomeIcon icon={faComment} className="me-2" />
-        Comments ({comments.length})
+        Comments ({comments?.length || 0})
       </Card.Header>
       <Card.Body>
         {error && <Alert variant="danger">{error}</Alert>}
@@ -99,14 +139,14 @@ const CommentSection = ({ researchId }) => {
         
         {loading ? (
           <Loading message="Loading comments..." />
-        ) : comments.length === 0 ? (
+        ) : !comments || comments.length === 0 ? (
           <div className="text-center py-3">
             <p className="text-muted">No comments yet. Be the first to share your thoughts!</p>
           </div>
         ) : (
           <ListGroup className="comments-list">
             {comments.map(comment => (
-              <ListGroup.Item key={comment.id} className="comment-item">
+              <ListGroup.Item key={comment.id || Math.random()} className="comment-item">
                 <div className="d-flex">
                   <div className="comment-avatar me-3">
                     <FontAwesomeIcon icon={faUser} size="2x" />
@@ -114,7 +154,7 @@ const CommentSection = ({ researchId }) => {
                   <div className="comment-content flex-grow-1">
                     <div className="comment-header d-flex justify-content-between">
                       <h6 className="comment-author mb-1">
-                        {comment.users.display_name}
+                        {comment.users?.display_name || comment.user?.display_name || 'Anonymous'}
                         {comment.is_author && (
                           <span className="badge bg-primary ms-2">Author</span>
                         )}

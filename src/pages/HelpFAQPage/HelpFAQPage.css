@@ -1,0 +1,61 @@
+.help-faq-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+}
+
+.page-header {
+  margin-bottom: 50px;
+}
+
+.page-title {
+  color: #2D7BA8;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.faq-card,
+.help-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.faq-card .card-header,
+.help-card .card-header {
+  background-color: #2D7BA8;
+  color: white;
+  border: none;
+  font-weight: 600;
+}
+
+.accordion-button {
+  font-weight: 600;
+  color: #2D7BA8;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #e7f3f8;
+  color: #2D7BA8;
+}
+
+.accordion-body {
+  color: #555;
+  line-height: 1.8;
+}
+
+.help-card a {
+  color: #2D7BA8;
+  text-decoration: none;
+}
+
+.help-card a:hover {
+  /* Underline effect is handled by global App.css a::after */
+}
+

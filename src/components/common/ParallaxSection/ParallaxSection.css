@@ -1,0 +1,11 @@
+.parallax-section {
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-section {
+    transform: none !important;
+  }
+}
+

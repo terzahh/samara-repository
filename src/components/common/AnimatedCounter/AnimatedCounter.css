@@ -1,0 +1,7 @@
+.animated-counter {
+  display: inline-block;
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  transition: all var(--transition-base);
+}
+

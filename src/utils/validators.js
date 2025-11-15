@@ -8,7 +8,10 @@ export const validatePassword = (password) => {
 };
 
 export const validateRequired = (value) => {
-  return value && value.trim() !== '';
+  // Handle different types of values
+  if (!value && value !== 0) return false; // Allow 0 but not null/undefined/empty
+  if (typeof value === 'string') return value.trim() !== '';
+  return true; // For numbers, booleans, objects (like File), etc.
 };
 
 export const validateResearchForm = (formData) => {

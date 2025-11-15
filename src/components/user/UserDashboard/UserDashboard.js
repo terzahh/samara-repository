@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { useResearch } from '../../../hooks/useResearch';
+import { getUserDownloads, getDownloadCount, getUserBookmarks, getUserCommentCount } from '../../../supabase/database';
 import Loading from '../../common/Loading/Loading';
 import { formatDate, truncateText, getResearchTypeLabel } from '../../../utils/helpers';
 import './UserDashboard.css';
@@ -18,38 +19,46 @@ const UserDashboard = () => {
   const { user } = useAuth();
   const { researchList, loading, fetchResearchList } = useResearch();
   const [downloadHistory, setDownloadHistory] = useState([]);
+  const [downloadCount, setDownloadCount] = useState(0);
   const [bookmarks, setBookmarks] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
+  const [loadingDownloads, setLoadingDownloads] = useState(true);
   
   useEffect(() => {
-    // In a real implementation, this would fetch user-specific data
-    // For now, we'll just use the general research list
+    const loadUserData = async () => {
+      if (!user?.id) return;
+      
+      try {
+        // Fetch real download history
+        const downloads = await getUserDownloads(user.id);
+        setDownloadHistory(downloads);
+        
+        // Get download count
+        const count = await getDownloadCount(user.id);
+        setDownloadCount(count);
+        
+        // Fetch real bookmarks
+        const bookmarksData = await getUserBookmarks(user.id);
+        setBookmarks(bookmarksData.map(b => ({
+          id: b.research.id,
+          title: b.research.title,
+          author: b.research.author,
+          bookmarkDate: b.created_at
+        })));
+        
+        // Get user's comment count
+        const commentCountData = await getUserCommentCount(user.id);
+        setCommentCount(commentCountData);
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      } finally {
+        setLoadingDownloads(false);
+      }
+    };
+    
+    loadUserData();
     fetchResearchList(1, 10, {}, true);
-    
-    // Mock data for download history and bookmarks
-    setDownloadHistory([
-      {
-        id: '1',
-        title: 'Machine Learning Applications in Healthcare',
-        author: 'John Doe',
-        downloadDate: new Date('2023-05-15')
-      },
-      {
-        id: '2',
-        title: 'Climate Change Impact on Agriculture',
-        author: 'Jane Smith',
-        downloadDate: new Date('2023-04-20')
-      }
-    ]);
-    
-    setBookmarks([
-      {
-        id: '3',
-        title: 'Renewable Energy Sources',
-        author: 'Robert Johnson',
-        bookmarkDate: new Date('2023-05-10')
-      }
-    ]);
-  }, [fetchResearchList]);
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
   return (
     <Container fluid className="user-dashboard">
@@ -66,7 +75,7 @@ const UserDashboard = () => {
                 <FontAwesomeIcon icon={faDownload} />
               </div>
               <div>
-                <h3 className="stat-number">{downloadHistory.length}</h3>
+                <h3 className="stat-number">{downloadCount}</h3>
                 <p className="stat-label">Downloads</p>
               </div>
             </Card.Body>
@@ -94,7 +103,7 @@ const UserDashboard = () => {
                 <FontAwesomeIcon icon={faHistory} />
               </div>
               <div>
-                <h3 className="stat-number">0</h3>
+                <h3 className="stat-number">{commentCount}</h3>
                 <p className="stat-label">Comments</p>
               </div>
             </Card.Body>
@@ -181,7 +190,9 @@ const UserDashboard = () => {
                     )}
                   </Tab.Pane>
                   <Tab.Pane eventKey="downloads">
-                    {downloadHistory.length === 0 ? (
+                    {loadingDownloads ? (
+                      <Loading message="Loading downloads..." />
+                    ) : downloadHistory.length === 0 ? (
                       <div className="text-center py-5">
                         <p className="text-muted">No downloads yet.</p>
                         <Button as={Link} to="/browse" variant="primary">
@@ -203,18 +214,18 @@ const UserDashboard = () => {
                             {downloadHistory.map(item => (
                               <tr key={item.id}>
                                 <td>
-                                  <Link to={`/research/${item.id}`} className="research-link">
-                                    {truncateText(item.title, 50)}
+                                  <Link to={`/research/${item.research.id}`} className="research-link">
+                                    {item.research.title}
                                   </Link>
                                 </td>
-                                <td>{item.author}</td>
-                                <td>{formatDate(item.downloadDate)}</td>
+                                <td>{item.research.author}</td>
+                                <td>{formatDate(item.downloaded_at)}</td>
                                 <td>
                                   <Button 
+                                    as={Link} 
+                                    to={`/research/${item.research.id}`} 
                                     variant="outline-primary" 
                                     size="sm"
-                                    as={Link}
-                                    to={`/research/${item.id}`}
                                   >
                                     View
                                   </Button>
@@ -254,7 +265,7 @@ const UserDashboard = () => {
                                   </Link>
                                 </td>
                                 <td>{item.author}</td>
-                                <td>{formatDate(item.bookmarkDate)}</td>
+                                <td>{formatDate(item.bookmarkDate || item.created_at)}</td>
                                 <td>
                                   <Button 
                                     variant="outline-primary" 
