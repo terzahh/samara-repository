@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ResearchProvider } from './context/ResearchContext';
 import Header from './components/common/Header/Header';
 import Footer from './components/common/Footer/Footer';
+import ScrollToTop from './components/common/ScrollToTop/ScrollToTop';
 import LandingPage from './pages/LandingPage/LandingPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import SignupPage from './pages/SignupPage/SignupPage';
@@ -17,6 +18,7 @@ import ResearchDetailPage from './pages/ResearchDetailPage/ResearchDetailPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import AboutPage from './pages/AboutPage/AboutPage';
 import CollegesDepartmentsPage from './pages/CollegesDepartmentsPage/CollegesDepartmentsPage';
+import CollegePage from './pages/CollegePage/CollegePage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import HelpFAQPage from './pages/HelpFAQPage/HelpFAQPage';
 import ContactPage from './pages/ContactPage/ContactPage';
@@ -112,6 +114,7 @@ const AppContent = () => {
 
   return (
     <div className="App">
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -123,6 +126,7 @@ const AppContent = () => {
         <Route path="/research/:id" element={<ResearchDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/colleges" element={<CollegesDepartmentsPage />} />
+        <Route path="/colleges/:id" element={<CollegePage />} />
         <Route path="/help" element={<HelpFAQPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/terms" element={<TermsPoliciesPage />} />

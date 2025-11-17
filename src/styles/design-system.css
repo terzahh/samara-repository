@@ -78,8 +78,8 @@
   --font-weight-extrabold: 800;
   
   --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --line-height-normal: 1.7;
+  --line-height-relaxed: 1.95;
   
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -302,6 +302,62 @@
     box-shadow: 0 0 20px rgba(45, 123, 168, 0.8), 0 0 30px rgba(45, 123, 168, 0.5);
   }
 }
+
+/* Animated gradient background */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Ripple effect for buttons */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+.ripple::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: rgba(255,255,255,0.25);
+  display: block;
+  opacity: 0;
+  border-radius: 50%;
+  transform: scale(1);
+  transition: transform 600ms ease, opacity 600ms ease;
+  pointer-events: none;
+}
+.ripple:active::after {
+  transform: scale(30);
+  opacity: 1;
+  transition: transform 400ms ease, opacity 400ms ease;
+}
+
+/* Tilt effect utility */
+.tilt-card {
+  transform-origin: center;
+  transition: transform 420ms cubic-bezier(.2,.9,.3,1), box-shadow 420ms var(--transition-base);
+}
+.tilt-card:hover {
+  transform: perspective(900px) rotateX(3deg) rotateY(-3deg) translateY(-8px);
+}
+
+/* Staggered reveal helper using nth-child */
+.stagger-reveal > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 520ms var(--transition-base), transform 520ms var(--transition-base);
+}
+.stagger-reveal.revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.stagger-reveal > *:nth-child(1) { transition-delay: 0ms; }
+.stagger-reveal > *:nth-child(2) { transition-delay: 80ms; }
+.stagger-reveal > *:nth-child(3) { transition-delay: 160ms; }
+.stagger-reveal > *:nth-child(4) { transition-delay: 240ms; }
+.stagger-reveal > *:nth-child(5) { transition-delay: 320ms; }
 
 /* ========== UTILITY CLASSES ========== */
 

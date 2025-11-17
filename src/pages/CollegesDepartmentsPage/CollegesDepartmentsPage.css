@@ -1,7 +1,7 @@
 .colleges-departments-page {
   min-height: 100vh;
   background-color: #f8f9fa;
-  padding: 20px 0;
+  padding: 28px 0;
 }
 
 .page-header {
@@ -26,9 +26,10 @@
 .colleges-accordion .accordion-item {
   border: none;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
   overflow: hidden;
+  padding: var(--spacing-lg);
 }
 
 .colleges-accordion .accordion-header {
@@ -42,6 +43,19 @@
   border: none;
   padding: 20px;
   font-weight: 600;
+}
+
+.colleges-accordion .accordion-button .chev {
+  display: inline-block;
+  transition: transform 320ms var(--transition-base);
+  margin-left: 8px;
+}
+
+.colleges-accordion .accordion-button.collapsed .chev {
+  transform: rotate(0deg);
+}
+.colleges-accordion .accordion-button:not(.collapsed) .chev {
+  transform: rotate(180deg);
 }
 
 .colleges-accordion .accordion-button:not(.collapsed) {
@@ -100,9 +114,9 @@
 .department-card,
 .program-card {
   border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  transition: transform 0.36s var(--transition-base), box-shadow 0.36s var(--transition-base);
 }
 
 .department-card:hover {
@@ -131,8 +145,8 @@
 
 .browse-all-card {
   border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(26, 93, 130, 0.07);
+  border-radius: 12px;
   background: linear-gradient(135deg, #2D7BA8 0%, #1a5d82 100%);
   color: white;
 }
@@ -172,5 +186,43 @@
   .program-card {
     margin-bottom: 15px;
   }
+}
+
+/* ====== Animations & Interactive Styles for Colleges Page ====== */
+.colleges-departments-page .page-title {
+  animation: fadeInLeft 640ms var(--transition-base);
+}
+
+.colleges-departments-page .page-subtitle {
+  opacity: 0;
+  animation: fadeInLeft 720ms var(--transition-base) forwards;
+  animation-delay: 120ms;
+}
+
+.colleges-accordion .accordion-item {
+  transition: transform 360ms var(--transition-base), box-shadow 360ms var(--transition-base);
+}
+
+.colleges-accordion .accordion-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 36px rgba(26,93,130,0.06);
+}
+
+.college-name {
+  transition: color 260ms var(--transition-base), transform 260ms var(--transition-base);
+}
+
+.college-name:hover {
+  color: var(--primary-dark);
+  transform: translateX(6px);
+}
+
+.browse-all-card {
+  transition: transform 420ms var(--transition-base), box-shadow 420ms var(--transition-base);
+}
+
+.browse-all-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 48px rgba(45,123,168,0.12);
 }
 

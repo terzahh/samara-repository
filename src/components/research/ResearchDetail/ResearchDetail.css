@@ -27,7 +27,8 @@
 .research-title {
   color: #2D7BA8;
   font-weight: 600;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
+  line-height: 1.15;
 }
 
 .research-author {
@@ -47,15 +48,20 @@
 }
 
 .research-abstract p {
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.9;
   color: #333;
 }
 
 .research-actions {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.research-actions .btn {
+  padding: calc(var(--spacing-sm) + 2px) var(--spacing-md);
 }
 
 .research-actions .btn {
@@ -67,6 +73,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  z-index: 0;
 }
 
 /* Share Button (outline-secondary) */
@@ -85,7 +92,7 @@
   height: 100%;
   background: var(--text-secondary);
   transition: left var(--transition-base);
-  z-index: 0;
+  z-index: -1;
 }
 
 .research-actions .btn-outline-secondary:hover {
@@ -126,7 +133,7 @@
   height: 100%;
   background: linear-gradient(135deg, #28a745, #20c997);
   transition: left var(--transition-base);
-  z-index: 0;
+  z-index: -1;
 }
 
 .research-actions .btn-outline-success:hover {
@@ -197,6 +204,10 @@
   border-radius: var(--radius-md);
 }
 
+.research-detail-card .card-body {
+  padding: var(--spacing-lg);
+}
+
 .research-detail-card .btn-outline-primary::before {
   content: '';
   position: absolute;
@@ -206,7 +217,7 @@
   height: 100%;
   background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
   transition: left var(--transition-base);
-  z-index: 0;
+  z-index: -1;
 }
 
 .research-detail-card .btn-outline-primary:hover {
