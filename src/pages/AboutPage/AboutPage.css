@@ -27,9 +27,10 @@
 .team-card,
 .info-card {
   border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-bottom: 30px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  margin-bottom: 34px;
+  padding: var(--spacing-lg);
 }
 
 .mission-vision-card .card-header,
@@ -56,7 +57,7 @@
 
 .objective-item {
   text-align: center;
-  padding: 20px;
+  padding: 28px 20px;
 }
 
 .objective-icon {
@@ -70,6 +71,10 @@
   margin: 0 auto;
   color: #2D7BA8;
   font-size: 30px;
+}
+
+.page-subtitle {
+  line-height: 1.9;
 }
 
 .objective-item h4 {
@@ -161,4 +166,121 @@
     margin-bottom: 20px;
   }
 }
+
+/* ====== Page Animations & Interactive Styles ====== */
+.about-page .page-title {
+  animation: fadeInUp 600ms var(--transition-base);
+}
+
+.about-page .page-subtitle {
+  opacity: 0;
+  animation: fadeInUp 700ms var(--transition-base) forwards;
+  animation-delay: 120ms;
+}
+
+.about-page .glass-card {
+  transition: transform 420ms var(--transition-base), box-shadow 420ms var(--transition-base);
+}
+
+.about-page .glass-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 18px 48px rgba(45,123,168,0.15);
+}
+
+.about-page .icon-wrapper {
+  transition: transform 600ms var(--transition-bounce), box-shadow 600ms var(--transition-base);
+}
+
+.about-page .icon-wrapper:hover {
+  transform: translateY(-6px) scale(1.06);
+  box-shadow: 0 12px 30px rgba(45,123,168,0.12);
+  animation: float 2.6s ease-in-out infinite;
+}
+
+.about-page .objective-item {
+  transition: transform 360ms var(--transition-base), box-shadow 360ms var(--transition-base);
+}
+
+.about-page .objective-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(45,123,168,0.06);
+}
+
+.about-page .objective-icon {
+  transition: transform 420ms var(--transition-base), background 420ms var(--transition-base);
+}
+
+.about-page .objective-item:hover .objective-icon {
+  transform: scale(1.08) rotate(-6deg);
+  background-color: rgba(45,123,168,0.14);
+}
+
+.about-page a {
+  position: relative;
+}
+
+.about-page a:hover {
+  color: var(--primary-dark);
+}
+
+/* stronger hero/intro treatment */
+.about-page .page-header {
+  background: linear-gradient(120deg, rgba(45,123,168,0.06), rgba(74,159,212,0.04));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-page .page-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(270deg, rgba(45,123,168,0.06), rgba(74,159,212,0.08));
+  background-size: 200% 200%;
+  animation: gradientBG 8s ease infinite;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.about-page .page-title {
+  position: relative;
+  z-index: 2;
+}
+
+.about-page .learn-more-btn {
+  transition: transform 320ms var(--transition-base), box-shadow 320ms var(--transition-base);
+}
+.about-page .learn-more-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 14px 40px rgba(45,123,168,0.12);
+}
+
+.about-page .info-card {
+  border: 1px solid rgba(45,123,168,0.06);
+}
+
+.about-page .info-card .card-body {
+  transition: transform 420ms var(--transition-base), box-shadow 420ms var(--transition-base);
+}
+.about-page .info-card:hover .card-body {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 36px rgba(45,123,168,0.08);
+}
+
+.about-page .team-role {
+  transition: transform 420ms var(--transition-base), box-shadow 420ms var(--transition-base);
+}
+.about-page .team-role:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 36px rgba(45,123,168,0.06);
+}
+
+/* use tilt utility for featured cards */
+.about-page .tilt-card { }
+
+/* apply ripple to CTAs */
+.about-page .btn { }
+.about-page .btn.ripple { overflow: hidden; }
 

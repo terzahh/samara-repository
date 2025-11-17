@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { getAllDepartments, getAllResearch } from '../../supabase/database';
 import './CollegesDepartmentsPage.css';
+import colleges from '../../data/collegesData';
 
 const CollegesDepartmentsPage = () => {
   const [departments, setDepartments] = useState([]);
@@ -75,154 +76,7 @@ const CollegesDepartmentsPage = () => {
     loadData();
   }, []);
 
-  const colleges = [
-    {
-      id: 1,
-      name: 'College of Social Science and Humanity',
-      departments: [
-        { name: 'Sociology', programs: ['Undergraduate'] },
-        { name: 'Geography & Environmental Studies', programs: ['Undergraduate'] },
-        { name: 'English Language & Literature', programs: ['Undergraduate'] },
-        { name: 'Arabic Language and Literature', programs: ['Undergraduate'] },
-        { name: 'Anthropology', programs: ['Undergraduate'] },
-        { name: 'Amharic Language and Literature', programs: ['Undergraduate'] },
-        { name: 'Qafar af and Literature', programs: ['Undergraduate'] },
-        { name: 'Professional Education', programs: ['Undergraduate'] },
-        { name: 'History and Heritage Management', programs: ['Undergraduate'] },
-        { name: 'Journalism and Communication', programs: ['Undergraduate'] },
-        { name: 'Archeology', programs: ['Undergraduate'] },
-      ],
-      postgraduate: [
-        'Disaster Risk Management and Pastoral Development',
-        'Sociology',
-        'Applied Linguistics and Communication in Afar Af',
-        'Applied Linguistics in Afar Af teaching',
-        'Educational Planning and Pastoral Education'
-      ]
-    },
-    {
-      id: 2,
-      name: 'College of Dry Agriculture',
-      departments: [
-        { name: 'Agrobusiness Value chain Management', programs: ['Undergraduate'] },
-        { name: 'Horticulture', programs: ['Undergraduate'] },
-        { name: 'Plant Science', programs: ['Undergraduate'] },
-        { name: 'Agriculture Economics', programs: ['Undergraduate'] },
-        { name: 'Natural Resource Management', programs: ['Undergraduate'] },
-        { name: 'Rural Development & Agricultural Extension', programs: ['Undergraduate'] },
-      ]
-    },
-    {
-      id: 3,
-      name: 'College of Natural Science',
-      departments: [
-        { name: 'Sport Science', programs: ['Undergraduate'] },
-        { name: 'Physics', programs: ['Undergraduate'] },
-        { name: 'Mathematics', programs: ['Undergraduate'] },
-        { name: 'Statistics', programs: ['Undergraduate'] },
-        { name: 'Biology', programs: ['Undergraduate'] },
-        { name: 'Chemistry', programs: ['Undergraduate'] },
-      ]
-    },
-    {
-      id: 4,
-      name: 'College of Medical and Health Science',
-      departments: [
-        { name: 'Nursing', programs: ['Undergraduate'] },
-        { name: 'Midwifery', programs: ['Undergraduate'] },
-        { name: 'Public Health', programs: ['Undergraduate', 'Postgraduate'] },
-        { name: 'Biomedical Sciences', programs: ['Undergraduate'] },
-        { name: 'Health Informatics', programs: ['Undergraduate'] },
-        { name: 'School of Medicine', programs: ['Undergraduate'] },
-      ],
-      postgraduate: [
-        'General Public Health',
-        'Public Health in Nutrition',
-        'Public Health in Reproductive Health'
-      ]
-    },
-    {
-      id: 5,
-      name: 'College of Business and Economics',
-      departments: [
-        { name: 'Accounting and Finance', programs: ['Undergraduate', 'Postgraduate'] },
-        { name: 'Economics', programs: ['Undergraduate', 'Postgraduate'] },
-        { name: 'Management', programs: ['Undergraduate'] },
-        { name: 'Marketing Management', programs: ['Undergraduate', 'Postgraduate'] },
-        { name: 'Logistics and Supply Chain Management', programs: ['Undergraduate'] },
-      ],
-      postgraduate: [
-        'Accounting and Finance',
-        'Development Economics',
-        'Business Administration',
-        'Marketing Management',
-        'Project Planning and Management'
-      ]
-    },
-    {
-      id: 6,
-      name: 'College of Veterinary Medicine',
-      departments: [
-        { name: 'Veterinary Medicine', programs: ['Undergraduate'] },
-        { name: 'Animal Science', programs: ['Undergraduate'] },
-      ],
-      postgraduate: [
-        'Veterinary Public Health'
-      ]
-    },
-    {
-      id: 7,
-      name: 'College of Engineering and Technology',
-      departments: [
-        { name: 'Civil Engineering', programs: ['Undergraduate'] },
-        { name: 'Chemical Engineering', programs: ['Undergraduate'] },
-        { name: 'Computer Science', programs: ['Undergraduate', 'Postgraduate'] },
-        { name: 'Information Technology', programs: ['Undergraduate'] },
-        { name: 'Mechanical Engineering', programs: ['Undergraduate'] },
-        { name: 'Electrical & Computer Engineering', programs: ['Undergraduate'] },
-        { name: 'Construction Technology Management', programs: ['Undergraduate'] },
-        { name: 'Water Resource & Irrigation Engineering', programs: ['Undergraduate'] },
-      ],
-      postgraduate: [
-        'Computer Science',
-        'Road and Transport Studies',
-        'Structural Engineering'
-      ]
-    },
-    {
-      id: 8,
-      name: 'School of Tourism and Hospitality Management',
-      departments: [
-        { name: 'Tourism and Hospitality Management', programs: ['Undergraduate'] },
-      ],
-      contact: {
-        name: 'Abraha Haftom (PhD)',
-        title: 'Dean, School of Tourism and Hospitality Management',
-        email: 'sthm@su.edu.et',
-        phone: '+251923750448'
-      }
-    },
-    {
-      id: 9,
-      name: 'School of Law and Governance',
-      departments: [
-        { name: 'Law and Governance', programs: ['Undergraduate'] },
-      ]
-    },
-    {
-      id: 10,
-      name: 'School of Earth Science',
-      departments: [
-        { name: 'Earth Science', programs: ['Undergraduate'] },
-      ],
-      contact: {
-        name: 'Getachew Geretsadkan',
-        title: 'School Dean',
-        email: 'getachewgebretsadik@su.edu.et',
-        phone: '+251-914-782-422'
-      }
-    }
-  ];
+  // colleges array is loaded from src/data/collegesData.js
 
   const findDepartmentByName = (name) => {
     const lowered = (name || '').toLowerCase().trim();
@@ -381,15 +235,31 @@ const CollegesDepartmentsPage = () => {
             <Accordion activeKey={expandedCollege?.toString()} className="colleges-accordion">
               {colleges.map((college) => (
                 <Accordion.Item eventKey={college.id.toString()} key={college.id}>
-                  <Accordion.Header onClick={() => toggleCollege(college.id)}>
+                    <Accordion.Header onClick={() => toggleCollege(college.id)}>
                     <div className="college-header">
-                      <h3 className="college-name">{college.name}</h3>
+                        <h3 className="college-name">{college.name}</h3>
                       {college.contact && (
                         <Badge bg="info" className="ms-2">Contact Info Available</Badge>
                       )}
                     </div>
                   </Accordion.Header>
-                  <Accordion.Body>
+                    <Accordion.Body>
+                      <div className="mb-2">
+                        <Link to={`/colleges/${college.id}`} className="btn btn-sm btn-outline-primary me-2">Open College Page</Link>
+                      </div>
+                    {/* Visit college website button */}
+                    {college.website && (
+                      <div className="mb-3">
+                        <a
+                          href={college.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-outline-primary me-2"
+                        >
+                          Visit College Website
+                        </a>
+                      </div>
+                    )}
                     {/* Contact Information */}
                     {college.contact && (
                       <Card className="contact-card mb-4">

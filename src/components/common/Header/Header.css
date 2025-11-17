@@ -129,6 +129,17 @@
   border-radius: var(--radius-md);
 }
 
+/* Disable global link underline inside navbar (prevents double underline with custom ::before) */
+.navbar .nav-link {
+  text-decoration: none;
+}
+
+/* Ensure global `a::after` from App.css doesn't show for navbar links */
+.navbar .nav-link::after,
+.navbar a::after {
+  display: none !important;
+}
+
 .navbar .nav-link::before {
   content: '';
   position: absolute;

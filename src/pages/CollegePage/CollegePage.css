@@ -1,0 +1,413 @@
+/* College Page - Modern Fancy Design */
+
+.college-page {
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* Hero Section */
+.college-hero-section {
+  background: linear-gradient(135deg, rgba(45, 123, 168, 0.95), rgba(74, 159, 212, 0.85)) !important;
+  color: white;
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.college-hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(20px); }
+}
+
+.college-hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: -1px;
+  animation: slideInDown 0.8s ease-out;
+}
+
+.college-hero-subtitle {
+  font-size: 1.3rem;
+  opacity: 0.95;
+  font-weight: 300;
+  letter-spacing: 1px;
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-contact {
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+.hero-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  animation: slideInRight 0.8s ease-out 0.3s both;
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Description Card */
+.description-card {
+  border-radius: 15px !important;
+  border: 1px solid rgba(45, 123, 168, 0.1) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 250, 255, 0.9));
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.description-card:hover {
+  box-shadow: 0 20px 60px rgba(45, 123, 168, 0.15) !important;
+  transform: translateY(-5px);
+}
+
+.description-card h3 {
+  color: #2d7ba8;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.description-text {
+  color: #555;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+/* Mission & Vision Cards */
+.mission-vision-card {
+  border-radius: 15px !important;
+  border: 1px solid rgba(45, 123, 168, 0.1) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 250, 255, 0.95));
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-vision-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: all 0.6s ease;
+}
+
+.mission-vision-card:hover::before {
+  left: 100%;
+}
+
+.mission-vision-card:hover {
+  box-shadow: 0 20px 60px rgba(45, 123, 168, 0.15) !important;
+  transform: translateY(-8px);
+}
+
+.mission-icon,
+.vision-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, rgba(45, 123, 168, 0.1), rgba(74, 159, 212, 0.1));
+  border-radius: 12px;
+}
+
+.mission-vision-card h4 {
+  color: #2d7ba8;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.mission-text,
+.vision-text {
+  color: #666;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Section Titles */
+.section-title {
+  color: #2d7ba8;
+  font-weight: 800;
+  font-size: 2rem;
+  margin-bottom: 2rem !important;
+  position: relative;
+  padding-bottom: 15px;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #2d7ba8, #4a9fd4);
+  border-radius: 2px;
+}
+
+/* Department Cards */
+.department-card {
+  border-radius: 12px !important;
+  border: 1px solid rgba(45, 123, 168, 0.1) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 250, 255, 0.95));
+  transition: all 0.4s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.department-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2d7ba8, #4a9fd4);
+}
+
+.department-hover:hover {
+  box-shadow: 0 15px 50px rgba(45, 123, 168, 0.12) !important;
+  transform: translateY(-8px);
+}
+
+.department-card h5 {
+  color: #2d7ba8;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.department-card .btn-outline-primary {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.department-card .btn-outline-primary:hover {
+  transform: translateX(3px);
+}
+
+/* Postgraduate Grid */
+.postgraduate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.postgraduate-item {
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 250, 255, 0.95));
+  border-left: 4px solid #2d7ba8;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.postgraduate-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(45, 123, 168, 0.05);
+  transition: all 0.4s ease;
+}
+
+.postgraduate-item:hover::before {
+  right: 0;
+}
+
+.postgraduate-item:hover {
+  box-shadow: 0 10px 30px rgba(45, 123, 168, 0.15);
+  transform: translateY(-5px);
+}
+
+.postgraduate-text {
+  color: #2d7ba8;
+  font-weight: 600;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Contact Card */
+.contact-card {
+  border-radius: 15px !important;
+  border: 1px solid rgba(45, 123, 168, 0.1) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 250, 255, 0.95));
+  box-shadow: 0 10px 40px rgba(45, 123, 168, 0.08) !important;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.contact-card:hover {
+  box-shadow: 0 20px 60px rgba(45, 123, 168, 0.15) !important;
+  transform: translateY(-5px);
+}
+
+.contact-card h3 {
+  color: #2d7ba8;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-info-item {
+  padding: 0;
+}
+
+.contact-info-item p {
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.contact-info-item strong {
+  color: #2d7ba8;
+}
+
+.contact-value {
+  color: #555;
+  font-size: 1rem !important;
+  font-weight: 500;
+}
+
+.contact-link {
+  color: #2d7ba8;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #4a9fd4;
+  text-decoration: underline;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.action-buttons .btn-primary {
+  background: linear-gradient(135deg, #2d7ba8, #4a9fd4);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(45, 123, 168, 0.2);
+}
+
+.action-buttons .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 45px rgba(45, 123, 168, 0.3);
+  background: linear-gradient(135deg, #1f5480, #3a8bc9);
+}
+
+.action-buttons .btn-outline-primary {
+  border: 2px solid #2d7ba8;
+  color: #2d7ba8;
+  border-radius: 8px;
+  padding: 10px 32px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: all 0.4s ease;
+}
+
+.action-buttons .btn-outline-primary:hover {
+  background: #2d7ba8;
+  border-color: #2d7ba8;
+  transform: translateY(-3px);
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .college-hero-title {
+    font-size: 2rem;
+  }
+
+  .college-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .postgraduate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+

@@ -31,6 +31,12 @@
   font-weight: 600;
 }
 
+.research-link {
+  display: inline-block;
+  padding: 4px 0;
+  letter-spacing: 0.2px;
+}
+
 .research-link:hover {
   color: #1a5d82;
   /* Underline effect is handled by global App.css a::after */
@@ -42,10 +48,11 @@
 }
 
 .research-abstract {
-  font-size: 14px;
+  font-size: 15px;
   color: #555;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   flex-grow: 1;
+  line-height: 1.75;
 }
 
 .research-meta {
@@ -61,8 +68,13 @@
 
 .research-actions {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.research-actions .btn {
+  padding: 6px 12px;
 }
 
 .research-actions .btn {
@@ -74,6 +86,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  z-index: 0;
 }
 
 /* View Button (outline-primary) */
@@ -92,7 +105,7 @@
   height: 100%;
   background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
   transition: left var(--transition-base);
-  z-index: 0;
+  z-index: -1;
 }
 
 .research-actions .btn-outline-primary:hover {
@@ -133,7 +146,7 @@
   height: 100%;
   background: linear-gradient(135deg, #28a745, #20c997);
   transition: left var(--transition-base);
-  z-index: 0;
+  z-index: -1;
 }
 
 .research-actions .btn-outline-success:hover {
