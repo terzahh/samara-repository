@@ -795,3 +795,24 @@ export const upsertUserProfile = async (userId, profile) => {
     throw error;
   }
 };
+
+// Get distinct publication years for a department (used to show available years)
+export const getResearchYearsByDepartment = async (departmentId) => {
+  try {
+    let query = supabase
+      .from('research')
+      .select('year', { distinct: true })
+      .order('year', { ascending: false });
+
+    if (departmentId) query = query.eq('department_id', departmentId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    // Normalize years to numbers and filter nulls
+    const years = (data || []).map(d => (d && d.year) ? d.year : null).filter(Boolean);
+    return years;
+  } catch (error) {
+    throw error;
+  }
+};
