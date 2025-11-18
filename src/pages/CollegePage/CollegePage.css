@@ -398,6 +398,35 @@
     font-size: 1.5rem;
   }
 
+  .selected-department {
+    border: 2px solid rgba(45,123,168,0.25) !important;
+    box-shadow: 0 10px 30px rgba(45,123,168,0.08) !important;
+  }
+}
+
+/* Years and research list */
+.year-button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.research-list .card-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.research-list .card-subtitle {
+  font-size: 0.85rem;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
   .postgraduate-grid {
     grid-template-columns: 1fr;
   }
