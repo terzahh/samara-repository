@@ -33,6 +33,7 @@ const UserManagement = () => {
   });
   const [resetLink, setResetLink] = useState('');
   const [newRole, setNewRole] = useState('');
+  const [newDepartmentId, setNewDepartmentId] = useState('');
   const [newUser, setNewUser] = useState({
     displayName: '',
     email: '',
@@ -67,6 +68,7 @@ const UserManagement = () => {
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setNewRole(user.roles.name);
+    setNewDepartmentId(user.departments?.id || '');
     setShowEditModal(true);
     setError('');
     setSuccess('');
@@ -127,7 +129,9 @@ const UserManagement = () => {
     if (!selectedUser || !newRole) return;
 
     try {
-      await changeUserRole(selectedUser.id, newRole);
+      // Pass department ID if role is department_head
+      const departmentId = newRole === 'department_head' ? newDepartmentId : null;
+      await changeUserRole(selectedUser.id, newRole, departmentId);
 
       // Refresh users list
       const usersList = await getUsers();
@@ -137,6 +141,7 @@ const UserManagement = () => {
       setShowEditModal(false);
       setSelectedUser(null);
       setNewRole('');
+      setNewDepartmentId('');
     } catch (error) {
       console.error('Error updating user role:', error);
       setError('Failed to update user role. Please try again.');
@@ -519,6 +524,21 @@ const UserManagement = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
+
+              {newRole === 'department_head' && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Department *</Form.Label>
+                  <Form.Select
+                    value={newDepartmentId}
+                    onChange={(e) => setNewDepartmentId(e.target.value)}
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map(dept => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              )}
             </Form>
           )}
         </Modal.Body>
