@@ -7,16 +7,24 @@ const colleges = [
     vision: 'A center of excellence in producing socially responsible graduates and advancing knowledge in humanities and social sciences.',
     website: 'https://su.edu.et/collage-of-social-science-and-humanity/',
     departments: [
-      { name: 'Sociology', programs: ['Undergraduate'] },
+      { name: 'Sociology', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Geography & Environmental Studies', programs: ['Undergraduate'] },
       { name: 'English Language & Literature', programs: ['Undergraduate'] },
+      { name: 'Arabic Language and Literature', programs: ['Undergraduate'] },
+      { name: 'Anthropology', programs: ['Undergraduate'] },
+      { name: 'Amharic Language and Literature', programs: ['Undergraduate'] },
+      { name: 'Qafar af and Literature', programs: ['Undergraduate'] },
+      { name: 'Professional Education', programs: ['Undergraduate'] },
       { name: 'History and Heritage Management', programs: ['Undergraduate'] },
-      { name: 'Journalism and Communication', programs: ['Undergraduate'] }
+      { name: 'Journalism and Communication', programs: ['Undergraduate'] },
+      { name: 'Archeology', programs: ['Undergraduate'] },
     ],
     postgraduate: [
       'Disaster Risk Management and Pastoral Development',
       'Sociology',
-      'Applied Linguistics and Communication in Afar Af'
+      'Applied Linguistics and Communication in Afar Af',
+      'Applied Linguistics in Afar Af teaching',
+      'Educational Planning and Pastoral Education'
     ],
     contact: { name: 'Habib Mohammed', title: 'Dean', email: 'cssh@su.edu.et', phone: '+251920700074' }
   },
@@ -33,9 +41,9 @@ const colleges = [
       { name: 'Plant Science', programs: ['Undergraduate'] },
       { name: 'Agriculture Economics', programs: ['Undergraduate'] },
       { name: 'Natural Resource Management', programs: ['Undergraduate'] },
-      { name: 'Rural Development & Agricultural Extension', programs: ['Undergraduate'] }
+      { name: 'Rural Development & Agricultural Extension', programs: ['Undergraduate'] },
     ],
-    postgraduate: ['MSc in Dryland Agriculture'],
+    postgraduate: [],
     contact: { name: 'Jemal Seid Endris', title: 'Dean', email: 'cda@su.edu.et', phone: '+251911111111' }
   },
   {
@@ -51,9 +59,9 @@ const colleges = [
       { name: 'Mathematics', programs: ['Undergraduate'] },
       { name: 'Statistics', programs: ['Undergraduate'] },
       { name: 'Biology', programs: ['Undergraduate'] },
-      { name: 'Chemistry', programs: ['Undergraduate'] }
+      { name: 'Chemistry', programs: ['Undergraduate'] },
     ],
-    postgraduate: ['MSc in Computer Science', 'MSc in Physics'],
+    postgraduate: [],
     contact: { name: 'Ataklti Abraha (PhD)', title: 'Dean', email: 'cncs@su.edu.et', phone: '+251911222222' }
   },
   {
@@ -68,7 +76,8 @@ const colleges = [
       { name: 'Midwifery', programs: ['Undergraduate'] },
       { name: 'Public Health', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Biomedical Sciences', programs: ['Undergraduate'] },
-      { name: 'School of Medicine', programs: ['Undergraduate'] }
+      { name: 'Health Informatics', programs: ['Undergraduate'] },
+      { name: 'School of Medicine', programs: ['Undergraduate'] },
     ],
     postgraduate: [
       'General Public Health',
@@ -89,7 +98,7 @@ const colleges = [
       { name: 'Economics', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Management', programs: ['Undergraduate'] },
       { name: 'Marketing Management', programs: ['Undergraduate', 'Postgraduate'] },
-      { name: 'Logistics and Supply Chain Management', programs: ['Undergraduate'] }
+      { name: 'Logistics and Supply Chain Management', programs: ['Undergraduate'] },
     ],
     postgraduate: [
       'Accounting and Finance',
@@ -108,8 +117,8 @@ const colleges = [
     vision: 'A center of excellence in veterinary sciences and animal agriculture research and education.',
     website: 'https://su.edu.et/collage-of-veterinary-medicine-and-animal-science/',
     departments: [
-      { name: 'Veterinary Medicine', programs: ['Undergraduate'] },
-      { name: 'Animal Science', programs: ['Undergraduate'] }
+      { name: 'Veterinary Medicine', programs: ['Undergraduate', 'Postgraduate'] },
+      { name: 'Animal Science', programs: ['Undergraduate'] },
     ],
     postgraduate: ['Veterinary Public Health'],
     contact: { name: 'TBD', title: 'Dean', email: 'cvmv@su.edu.et', phone: '+251911444444' }
@@ -125,16 +134,17 @@ const colleges = [
       { name: 'Civil Engineering', programs: ['Undergraduate'] },
       { name: 'Chemical Engineering', programs: ['Undergraduate'] },
       { name: 'Computer Science', programs: ['Undergraduate', 'Postgraduate'] },
-      { name: 'Information Technology', programs: ['Undergraduate'] },
+      { name: 'Information Technology', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Mechanical Engineering', programs: ['Undergraduate'] },
       { name: 'Electrical & Computer Engineering', programs: ['Undergraduate'] },
       { name: 'Construction Technology Management', programs: ['Undergraduate'] },
-      { name: 'Water Resource & Irrigation Engineering', programs: ['Undergraduate'] }
+      { name: 'Water Resource & Irrigation Engineering', programs: ['Undergraduate'] },
     ],
     postgraduate: [
       'Computer Science',
       'Road and Transport Studies',
-      'Structural Engineering'
+      'Structural Engineering',
+      'Information Technology'
     ],
     contact: { name: 'TBD', title: 'Dean', email: 'cet@su.edu.et', phone: '+251911555555' }
   },
@@ -146,7 +156,7 @@ const colleges = [
     vision: 'A premier institution for tourism and hospitality education fostering sustainable industry development.',
     website: 'https://su.edu.et/school-of-tourism-hospitality-management-2/',
     departments: [
-      { name: 'Tourism and Hospitality Management', programs: ['Undergraduate'] }
+      { name: 'Tourism and Hospitality Management', programs: ['Undergraduate'] },
     ],
     postgraduate: ['MSc in Tourism Management'],
     contact: {
@@ -164,7 +174,8 @@ const colleges = [
     vision: 'A leading institution for legal and governance education advancing justice and democratic development.',
     website: 'https://su.edu.et/school-of-law-and-governance-2/',
     departments: [
-      { name: 'Law and Governance', programs: ['Undergraduate'] }
+      { name: 'Law and Governance', programs: ['Undergraduate'] },
+      { name: 'Civic and Ethical Studies', programs: ['Undergraduate'] },
     ],
     postgraduate: ['LLM', 'MA in Governance'],
     contact: { name: 'TBD', title: 'Dean', email: 'slg@su.edu.et', phone: '+251911666666' }
@@ -177,7 +188,7 @@ const colleges = [
     vision: 'A leading center for earth sciences education and research supporting sustainable development.',
     website: 'https://su.edu.et/school-of-earth-science-2/',
     departments: [
-      { name: 'Earth Science', programs: ['Undergraduate'] }
+      { name: 'Earth Science', programs: ['Undergraduate'] },
     ],
     postgraduate: ['MSc in Geology'],
     contact: {

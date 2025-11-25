@@ -5,6 +5,7 @@ import { register } from '../../../services/authService';
 import { validateEmail, validatePassword, validateRequired } from '../../../utils/validators';
 import { ROLES } from '../../../utils/constants';
 import { getAllDepartments } from '../../../supabase/database';
+import colleges from '../../../data/collegesData';
 import './SignupForm.css';
 
 const SignupForm = () => {
@@ -18,21 +19,29 @@ const SignupForm = () => {
     departmentId: ''
   });
   const [departments, setDepartments] = useState([]);
+  const [postgraduateCourses, setPostgraduateCourses] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const depts = await getAllDepartments();
-        setDepartments(depts);
-      } catch (error) {
-        console.error('Error fetching departments:', error);
+    // Collect all departments (UG/PG) from collegesData
+    const allDepts = [];
+    colleges.forEach(college => {
+      if (Array.isArray(college.departments)) {
+        college.departments.forEach(dept => {
+          allDepts.push({
+            name: dept.name,
+            college: college.name,
+            programs: dept.programs || []
+          });
+        });
       }
-    };
-    fetchDepartments();
+    });
+    // Sort alphabetically by department name
+    allDepts.sort((a, b) => a.name.localeCompare(b.name));
+    setDepartments(allDepts);
   }, []);
   
   const handleChange = (e) => {
@@ -170,8 +179,8 @@ const SignupForm = () => {
                 isInvalid={!!errors.departmentId}
               >
                 <option value="">Select Department</option>
-                {departments.map(dept => (
-                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                {departments.map((dept, idx) => (
+                  <option key={idx} value={dept.name}>{dept.name} ({dept.college})</option>
                 ))}
               </Form.Select>
               <Form.Control.Feedback type="invalid">

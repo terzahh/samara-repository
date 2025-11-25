@@ -65,7 +65,8 @@ const initialState = {
     department: '',
     type: '',
     year: '',
-    accessLevel: 'all'
+    accessLevel: 'all',
+    level: 'all'
   },
   pagination: {
     currentPage: 1,
@@ -158,7 +159,8 @@ export const ResearchProvider = ({ children }) => {
         department: '',
         type: '',
         year: '',
-        accessLevel: 'all'
+        accessLevel: 'all',
+        level: 'all'
       } 
     });
   };

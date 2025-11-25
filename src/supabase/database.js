@@ -8,7 +8,7 @@ export const addResearch = async (researchData) => {
       .from('research')
       .insert(researchData)
       .select();
-    
+
     if (error) {
       console.error('Error adding research:', error);
       // If it's a 401, it's likely an RLS policy issue
@@ -31,7 +31,7 @@ export const updateResearch = async (id, researchData) => {
       .update(researchData)
       .eq('id', id)
       .select();
-    
+
     if (error) {
       console.error('Error updating research:', error);
       if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('401') || error.message?.includes('row-level security')) {
@@ -52,7 +52,7 @@ export const deleteResearch = async (id) => {
       .from('research')
       .delete()
       .eq('id', id);
-    
+
     if (error) {
       console.error('Error deleting research:', error);
       if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('401') || error.message?.includes('row-level security')) {
@@ -76,7 +76,7 @@ export const getResearchById = async (id) => {
       `)
       .eq('id', id)
       .single();
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -92,41 +92,41 @@ export const getAllResearch = async (page = 1, pageSize = 10, filters = {}) => {
         *,
         departments(name)
       `, { count: 'exact' });
-    
+
     // Apply filters
     if (filters.department) {
       query = query.eq('department_id', filters.department);
     }
-    
+
     if (filters.type) {
       query = query.eq('type', filters.type);
     }
-    
+
     if (filters.year) {
       query = query.eq('year', filters.year);
     }
-    
+
     if (filters.accessLevel && filters.accessLevel !== 'all') {
       query = query.eq('access_level', filters.accessLevel);
     }
-    
+
     // Apply search
     if (filters.searchTerm) {
       query = query.or(`title.ilike.%${filters.searchTerm}%,author.ilike.%${filters.searchTerm}%,abstract.ilike.%${filters.searchTerm}%,keywords.ilike.%${filters.searchTerm}%`);
     }
-    
+
     // Apply pagination
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
-    
+
     query = query
       .order('created_at', { ascending: false })
       .range(from, to);
-    
+
     const { data, error, count } = await query;
-    
+
     if (error) throw error;
-    
+
     return {
       research: data,
       totalCount: count || 0,
@@ -145,33 +145,87 @@ export const searchResearch = async (searchTerm, filters = {}) => {
         *,
         departments(name)
       `);
-    
+
     // Apply search
     query = query.or(`title.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%,abstract.ilike.%${searchTerm}%,keywords.ilike.%${searchTerm}%`);
-    
+
     // Apply filters
     if (filters.department) {
       query = query.eq('department_id', filters.department);
     }
-    
+
     if (filters.type) {
       query = query.eq('type', filters.type);
     }
-    
+
     if (filters.year) {
       query = query.eq('year', filters.year);
     }
-    
+
     if (filters.accessLevel && filters.accessLevel !== 'all') {
       query = query.eq('access_level', filters.accessLevel);
     }
-    
+
     const { data, error } = await query
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
+    throw error;
+  }
+};
+
+
+// Increment view count for a research paper
+export const incrementResearchViewCount = async (researchId) => {
+  try {
+    const { data, error } = await supabase
+      .from('research')
+      .select('view_count')
+      .eq('id', researchId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching current view count:', error);
+      return false;
+    }
+
+    const newCount = (data.view_count || 0) + 1;
+
+    const { error: updateError } = await supabase
+      .from('research')
+      .update({ view_count: newCount })
+      .eq('id', researchId);
+
+    if (updateError) {
+      console.error('Error incrementing view count:', updateError);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in incrementResearchViewCount:', error);
+    return false;
+  }
+};
+
+// Get most viewed research papers
+export const getMostViewedResearch = async (limit = 6) => {
+  try {
+    const { data, error } = await supabase
+      .from('research')
+      .select(`
+        *,
+        departments(name)
+      `)
+      .order('view_count', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching most viewed research:', error);
     throw error;
   }
 };
@@ -184,7 +238,7 @@ export const addComment = async (commentData) => {
       .from('comments')
       .insert(commentData)
       .select();
-    
+
     if (error) {
       console.error('Error adding comment:', error);
       // If it's a 401, it's likely an RLS policy issue
@@ -210,7 +264,7 @@ export const getComments = async (researchId) => {
       `)
       .eq('research_id', researchId)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data || [];
   } catch (error) {
@@ -229,7 +283,7 @@ export const getAllUsers = async () => {
         departments(name)
       `)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -237,13 +291,35 @@ export const getAllUsers = async () => {
   }
 };
 
-export const updateUserRole = async (userId, roleId) => {
+export const updateUserRole = async (userId, roleId, departmentId = null) => {
+  try {
+    // Prepare update object
+    const updateData = { role_id: roleId };
+
+    // If departmentId is provided, update it; otherwise set to null
+    if (departmentId !== undefined) {
+      updateData.department_id = departmentId;
+    }
+
+    const { error } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUser = async (userId) => {
   try {
     const { error } = await supabase
       .from('users')
-      .update({ role_id: roleId })
+      .delete()
       .eq('id', userId);
-    
+
     if (error) throw error;
     return true;
   } catch (error) {
@@ -258,7 +334,7 @@ export const getAllDepartments = async () => {
       .from('departments')
       .select('*')
       .order('name');
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -273,7 +349,7 @@ export const getDepartmentById = async (departmentId) => {
       .select('*')
       .eq('id', departmentId)
       .single();
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -288,7 +364,7 @@ export const getAllRoles = async () => {
       .from('roles')
       .select('*')
       .order('name');
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -302,19 +378,19 @@ export const getSystemSettings = async () => {
     const { data, error } = await supabase
       .from('system_settings')
       .select('*');
-    
+
     if (error) throw error;
-    
+
     // Convert to key-value object and parse values appropriately
     const settings = {};
     const booleanKeys = ['allow_public_registration', 'require_approval_for_public', 'maintenance_mode', 'allow_guest_comments', 'allowPublicRegistration', 'requireApprovalForPublic', 'maintenanceMode', 'allowGuestComments'];
     const arrayKeys = ['allowed_file_types', 'allowedFileTypes'];
     const numberKeys = ['max_file_size', 'maxFileSize'];
-    
+
     data.forEach(setting => {
       let value = setting.value;
       let key = setting.key;
-      
+
       // Parse boolean values (handle both snake_case and camelCase)
       if (booleanKeys.includes(key)) {
         // Handle various boolean representations - be strict about conversion
@@ -349,10 +425,10 @@ export const getSystemSettings = async () => {
       else if (numberKeys.includes(key)) {
         value = typeof value === 'string' ? parseFloat(value) : value;
       }
-      
+
       settings[key] = value;
     });
-    
+
     return settings;
   } catch (error) {
     throw error;
@@ -372,10 +448,10 @@ export const updateSystemSetting = async (key, value) => {
       'maintenanceMessage': 'maintenance_message',
       'allowGuestComments': 'allow_guest_comments'
     };
-    
+
     // Convert key to snake_case if it's in the mapping, otherwise use as-is
     const dbKey = keyMapping[key] || key;
-    
+
     // Convert value to string for storage
     let stringValue = value;
     if (typeof value === 'boolean') {
@@ -387,20 +463,20 @@ export const updateSystemSetting = async (key, value) => {
     } else {
       stringValue = String(value);
     }
-    
+
     // Check if setting exists - use maybeSingle to avoid 406 errors
     const { error: checkError } = await supabase
       .from('system_settings')
       .select('key')
       .eq('key', dbKey)
       .maybeSingle();
-    
+
     // If there's an error and it's not "no rows found", throw it
     if (checkError && checkError.code !== 'PGRST116') {
       console.error(`Error checking for existing setting ${dbKey}:`, checkError);
       throw checkError;
     }
-    
+
     // Use upsert to handle both insert and update in one operation
     // This avoids the 406 error and ensures we always update the correct row
     const { error: upsertError } = await supabase
@@ -409,7 +485,7 @@ export const updateSystemSetting = async (key, value) => {
         { key: dbKey, value: stringValue },
         { onConflict: 'key' }
       );
-    
+
     if (upsertError) {
       console.error(`Error upserting setting ${dbKey}:`, upsertError);
       throw upsertError;
@@ -427,7 +503,7 @@ export const updateSystemSetting = async (key, value) => {
         console.warn(`Could not delete old key ${key}:`, deleteError);
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error(`Error updating system setting ${key}:`, error);
@@ -442,25 +518,25 @@ export const getSystemStats = async () => {
     const { data: researchData, error: researchError } = await supabase
       .from('research')
       .select('type, access_level');
-    
+
     if (researchError) throw researchError;
-    
+
     // Get user stats
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select(`
         roles(name)
       `);
-    
+
     if (userError) throw userError;
-    
+
     // Get comment count - use custom auth client to avoid RLS issues
     let commentCount = 0;
     try {
       const { count, error: commentError } = await supabaseForCustomAuth
         .from('comments')
         .select('*', { count: 'exact', head: true });
-      
+
       if (!commentError && count !== null) {
         commentCount = count;
       }
@@ -468,7 +544,7 @@ export const getSystemStats = async () => {
       // Comments table might not exist, default to 0
       console.warn('Could not fetch comment count:', e);
     }
-    
+
     // Get storage size from research-files bucket
     let storageSizeBytes = 0;
     try {
@@ -479,7 +555,7 @@ export const getSystemStats = async () => {
           limit: 10000,
           sortBy: { column: 'created_at', order: 'desc' }
         });
-      
+
       if (!storageError && files) {
         // Calculate total size from file metadata
         // Note: Supabase storage list doesn't always return size, so we'll estimate
@@ -488,7 +564,7 @@ export const getSystemStats = async () => {
           .from('research')
           .select('file_path, file_name')
           .not('file_path', 'is', null);
-        
+
         if (researchWithFiles) {
           // Estimate: average file size ~2MB per research item
           // In production, you'd want to track actual file sizes
@@ -498,7 +574,7 @@ export const getSystemStats = async () => {
     } catch (e) {
       console.warn('Could not calculate storage size:', e);
     }
-    
+
     // Calculate stats
     const stats = {
       totalResearch: researchData.length,
@@ -516,7 +592,7 @@ export const getSystemStats = async () => {
       commentCount: commentCount,
       storageSizeBytes: storageSizeBytes
     };
-    
+
     // Count by research type
     researchData.forEach(item => {
       switch (item.type) {
@@ -539,7 +615,7 @@ export const getSystemStats = async () => {
           // Unknown type, ignore
           break;
       }
-      
+
       // Count by access level
       if (item.access_level === 'public') {
         stats.publicResearchCount++;
@@ -547,7 +623,7 @@ export const getSystemStats = async () => {
         stats.restrictedResearchCount++;
       }
     });
-    
+
     // Count by user role
     userData.forEach(item => {
       switch (item.roles.name) {
@@ -565,7 +641,7 @@ export const getSystemStats = async () => {
           break;
       }
     });
-    
+
     return stats;
   } catch (error) {
     throw error;
@@ -582,7 +658,7 @@ export const trackDownload = async (userId, researchId) => {
         research_id: researchId
       })
       .select();
-    
+
     if (error) throw error;
     return data[0];
   } catch (error) {
@@ -607,7 +683,7 @@ export const getUserDownloads = async (userId) => {
       `)
       .eq('user_id', userId)
       .order('downloaded_at', { ascending: false });
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -621,7 +697,7 @@ export const getDownloadCount = async (userId) => {
       .from('downloads')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId);
-    
+
     if (error) throw error;
     return count || 0;
   } catch (error) {
@@ -637,7 +713,7 @@ export const getUserCommentCount = async (userId) => {
       .from('comments')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId);
-    
+
     if (error) throw error;
     return count || 0;
   } catch (error) {
@@ -656,11 +732,11 @@ export const addBookmark = async (userId, researchId) => {
       .eq('user_id', userId)
       .eq('research_id', researchId)
       .maybeSingle();
-    
+
     if (existing) {
       return existing; // Already bookmarked
     }
-    
+
     const { data, error } = await supabaseForCustomAuth
       .from('bookmarks')
       .insert({
@@ -669,7 +745,7 @@ export const addBookmark = async (userId, researchId) => {
       })
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -685,7 +761,7 @@ export const removeBookmark = async (userId, researchId) => {
       .delete()
       .eq('user_id', userId)
       .eq('research_id', researchId);
-    
+
     if (error) throw error;
     return true;
   } catch (error) {
@@ -712,7 +788,7 @@ export const getUserBookmarks = async (userId) => {
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data || [];
   } catch (error) {
@@ -729,7 +805,7 @@ export const isBookmarked = async (userId, researchId) => {
       .eq('user_id', userId)
       .eq('research_id', researchId)
       .maybeSingle();
-    
+
     if (error) throw error;
     return !!data;
   } catch (error) {
@@ -814,5 +890,86 @@ export const getResearchYearsByDepartment = async (departmentId) => {
     return years;
   } catch (error) {
     throw error;
+  }
+};
+
+// ========== DUPLICATE DETECTION FUNCTIONS ==========
+
+/**
+ * Check if a file hash already exists in the database
+ * @param {string} fileHash - SHA-256 hash of the file
+ * @returns {Promise<object|null>} - Matching research or null
+ */
+export const checkFileHashExists = async (fileHash) => {
+  try {
+    const { data, error } = await supabase
+      .from('research')
+      .select('id, title, author, file_name, created_at')
+      .eq('file_hash', fileHash)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking file hash:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in checkFileHashExists:', error);
+    return null;
+  }
+};
+
+/**
+ * Check if a text hash already exists in the database
+ * @param {string} textHash - SHA-256 hash of normalized text
+ * @returns {Promise<object|null>} - Matching research or null
+ */
+export const checkTextHashExists = async (textHash) => {
+  try {
+    const { data, error } = await supabase
+      .from('research')
+      .select('id, title, author, file_name, created_at')
+      .eq('text_hash', textHash)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking text hash:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in checkTextHashExists:', error);
+    return null;
+  }
+};
+
+/**
+ * Find research with similar text content
+ * @param {string} textContent - Text content to compare
+ * @param {number} threshold - Similarity threshold (0-1)
+ * @returns {Promise<array>} - Array of potentially similar research
+ */
+export const getSimilarResearch = async (textContent, threshold = 0.80) => {
+  try {
+    // Get all research with text_content
+    // Note: In production, you'd want to implement more efficient similarity search
+    // using database extensions like pg_trgm or vector similarity
+    const { data, error } = await supabase
+      .from('research')
+      .select('id, title, author, file_name, text_content, created_at')
+      .not('text_content', 'is', null)
+      .limit(100); // Limit to avoid performance issues
+
+    if (error) {
+      console.error('Error getting similar research:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error in getSimilarResearch:', error);
+    return [];
   }
 };

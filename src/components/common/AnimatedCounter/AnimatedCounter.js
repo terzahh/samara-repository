@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './AnimatedCounter.css';
 
-const AnimatedCounter = ({ 
-  end, 
-  duration = 2000, 
-  prefix = '', 
+const AnimatedCounter = ({
+  end,
+  duration = 2000,
+  prefix = '',
   suffix = '',
   className = '',
-  decimals = 0 
+  decimals = 0
 }) => {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -19,7 +19,6 @@ const AnimatedCounter = ({
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isVisible) {
             setIsVisible(true);
-            animateCounter();
           }
         });
       },
@@ -37,6 +36,13 @@ const AnimatedCounter = ({
     };
   }, [isVisible]);
 
+  // Trigger animation when visible and end value changes
+  useEffect(() => {
+    if (isVisible && end > 0) {
+      animateCounter();
+    }
+  }, [isVisible, end]);
+
   const animateCounter = () => {
     const startTime = performance.now();
     const startValue = 0;
@@ -45,11 +51,11 @@ const AnimatedCounter = ({
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Easing function (ease-out)
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const currentValue = startValue + (endValue - startValue) * easeOut;
-      
+
       setCount(currentValue);
 
       if (progress < 1) {

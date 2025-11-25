@@ -95,7 +95,7 @@ const AboutPage = () => {
                       <div className="objective-icon mb-3">
                         <FontAwesomeIcon icon={faLock} />
                       </div>
-                      <h4>Provide Open Access</h4>
+                      <h4>Provide Open Access</h4><br/>
                       <p>
                         To promote open access to research by providing free, unrestricted access to 
                         scholarly works while respecting copyright and intellectual property rights. 
@@ -209,7 +209,7 @@ const AboutPage = () => {
                     <div className="team-role">
                       <h5>ICT Support Staff</h5>
                       <p>
-                        Provide technical support, system maintenance, backup and recovery, and 
+                        Provide technical support, system maintenance, backup and recovery,and 
                         infrastructure management for the repository platform.
                       </p>
                     </div>

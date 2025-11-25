@@ -8,7 +8,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { formatDate, getResearchTypeLabel } from '../../../utils/helpers';
 import { ACCESS_LEVELS } from '../../../utils/constants';
 import { getDownloadUrl } from '../../../services/researchService';
-import { trackDownload, addBookmark, removeBookmark, isBookmarked } from '../../../supabase/database';
+import { trackDownload, addBookmark, removeBookmark, isBookmarked, incrementResearchViewCount } from '../../../supabase/database';
 import CommentSection from '../CommentSection/CommentSection';
 import Loading from '../../common/Loading/Loading';
 import './ResearchDetail.css';
@@ -26,6 +26,7 @@ const ResearchDetail = () => {
   useEffect(() => {
     if (id) {
       fetchResearchById(id)
+        .then(() => incrementResearchViewCount(id))
         .catch(error => {
           console.error('Error fetching research:', error);
           setError('Failed to load research. Please try again.');

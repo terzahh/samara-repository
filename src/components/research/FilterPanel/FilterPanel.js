@@ -11,7 +11,8 @@ const FilterPanel = ({ onFilter, initialFilters = {} }) => {
     department: initialFilters.department || '',
     type: initialFilters.type || '',
     year: initialFilters.year || '',
-    accessLevel: initialFilters.accessLevel || 'all'
+    accessLevel: initialFilters.accessLevel || 'all',
+    level: initialFilters.level || 'all'
   });
   const [departments, setDepartments] = useState([]);
   
@@ -44,7 +45,8 @@ const FilterPanel = ({ onFilter, initialFilters = {} }) => {
       department: '',
       type: '',
       year: '',
-      accessLevel: 'all'
+      accessLevel: 'all',
+      level: 'all'
     };
     setFilters(resetFilters);
     if (onFilter) {
@@ -130,6 +132,21 @@ const FilterPanel = ({ onFilter, initialFilters = {} }) => {
                 <option value="all">All Levels</option>
                 <option value="public">Public</option>
                 <option value="restricted">Restricted</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={6} className="mb-3">
+            <Form.Group controlId="level">
+              <Form.Label>Academic Level</Form.Label>
+              <Form.Select
+                name="level"
+                value={filters.level}
+                onChange={handleChange}
+              >
+                <option value="all">All Levels</option>
+                <option value="undergraduate">Undergraduate</option>
+                <option value="postgraduate">Postgraduate</option>
               </Form.Select>
             </Form.Group>
           </Col>

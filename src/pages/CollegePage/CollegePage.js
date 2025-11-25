@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Badge, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Badge, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faAward, 
-  faBook, 
-  faGraduationCap, 
-  faEnvelope, 
-  faPhone, 
+import {
+  faAward,
+  faBook,
+  faGraduationCap,
+  faEnvelope,
+  faPhone,
   faMapMarkerAlt,
   faArrowRight,
   faBullseye,
   faEye
 } from '@fortawesome/free-solid-svg-icons';
 import colleges from '../../data/collegesData';
+import ResearchCard from '../../components/research/ResearchCard/ResearchCard';
 import { getAllResearch } from '../../supabase/database';
+import { getResearchLevel } from '../../utils/helpers';
 import './CollegePage.css';
 
 const CollegePage = () => {
@@ -24,10 +26,17 @@ const CollegePage = () => {
 
   const [allResearch, setAllResearch] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedLevel, setSelectedLevel] = useState('all'); // all | undergraduate | postgraduate
+  const [selectedLevel, setSelectedLevel] = useState(null); // null | 'undergraduate' | 'postgraduate'
   const [selectedYear, setSelectedYear] = useState('all'); // 'all' or numeric year
   const [availableYears, setAvailableYears] = useState([]);
   const [displayedResearch, setDisplayedResearch] = useState([]);
+  const [deptCounts, setDeptCounts] = useState({ total: 0, undergraduate: 0, postgraduate: 0, unknown: 0 });
+  const [yearCounts, setYearCounts] = useState({});
+  const yearsRef = React.useRef(null);
+  const researchRef = React.useRef(null);
+  const [deptFilteredDebug, setDeptFilteredDebug] = useState([]);
+  const [filteredDebug, setFilteredDebug] = useState([]);
+  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     // load a large page to get all research for filtering on this page
@@ -48,27 +57,108 @@ const CollegePage = () => {
     // filter by department if selected, else include all departments in this college
     const deptNames = college.departments ? college.departments.map(d => d.name) : [];
 
+    // helper to map research.type to a rough level
+    const mapTypeToLevel = (type) => {
+      const t = (type || '').toLowerCase();
+      const post = new Set(['thesis', 'dissertation']);
+      const under = new Set(['project_report', 'capstone', 'undergraduate_project']);
+      if (post.has(t)) return 'postgraduate';
+      if (under.has(t)) return 'undergraduate';
+      return 'both';
+    };
+
+    // Helper to check keywords for level tag
+    const hasLevelKeyword = (r, lvl) => {
+      if (!r || !r.keywords) return false;
+      try {
+        const kws = typeof r.keywords === 'string' ? r.keywords.toLowerCase() : JSON.stringify(r.keywords).toLowerCase();
+        return kws.includes(`level:${lvl}`);
+      } catch (e) {
+        return false;
+      }
+    };
+
     let filtered = allResearch.filter(r => {
       // r.departments may be an object { name: '...' } or array; handle both
       const rDeptName = r.departments?.name || (Array.isArray(r.departments) ? r.departments[0]?.name : null);
+
       // match only research that belongs to one of this college's departments
       const inCollege = deptNames.length === 0 ? true : deptNames.includes(rDeptName);
       if (!inCollege) return false;
-      // if a department is selected, only include those research items
-      if (selectedDepartment && rDeptName !== selectedDepartment) return false;
-      // level filtering placeholder: currently no explicit level field on research; kept for UI
-      // if selectedLevel is not 'all', we could map types to level if applicable
+
+      // Department/program matching: if selectedDepartment is set, allow matches where
+      // - rDeptName exactly equals selectedDepartment (regular department)
+      // - OR selectedDepartment is an extra program name: match against keywords/title/abstract
+      if (selectedDepartment) {
+        const selectedLower = String(selectedDepartment).toLowerCase();
+        const matchedDept = rDeptName === selectedDepartment;
+        const textFields = `${r.title || ''} ${r.abstract || ''} ${r.keywords || ''}`.toLowerCase();
+        const matchedProgram = !matchedDept && textFields.includes(selectedLower);
+        if (!matchedDept && !matchedProgram) return false;
+      }
+
+      // level filtering: use canonical helper. For 'postgraduate' require explicit/postgraduate mapping.
+      if (selectedLevel) {
+        const lvl = getResearchLevel(r); // returns 'undergraduate'|'postgraduate'|'unknown'
+        if (selectedLevel === 'postgraduate') {
+          // be strict: only include explicit postgraduate
+          if (lvl !== 'postgraduate') return false;
+        } else if (selectedLevel === 'undergraduate') {
+          // be lenient: include items marked undergraduate OR unknown (treat unknown as undergrad)
+          if (!(lvl === 'undergraduate' || lvl === 'unknown')) return false;
+        }
+      }
+
       return true;
     });
 
-    // derive years
-    const yearsSet = new Set();
-    filtered.forEach(r => {
-      const y = r.year || (r.created_at ? new Date(r.created_at).getFullYear() : null);
-      if (y) yearsSet.add(y);
-    });
-    const years = Array.from(yearsSet).sort((a,b) => b - a);
-    setAvailableYears(years);
+    // derive years for the selected department (ignore selectedLevel so years show all uploads)
+    if (selectedDepartment) {
+      const deptFiltered = allResearch.filter(r => {
+        const rDeptName = r.departments?.name || (Array.isArray(r.departments) ? r.departments[0]?.name : null);
+        // match department exact or program-name occurrences in text
+        if (rDeptName === selectedDepartment) return true;
+        const textFields = `${r.title || ''} ${r.abstract || ''} ${r.keywords || ''}`.toLowerCase();
+        if (String(selectedDepartment).toLowerCase() && textFields.includes(String(selectedDepartment).toLowerCase())) return true;
+        return false;
+      });
+
+      // save debug snapshot of deptFiltered for inspection
+      setDeptFilteredDebug(deptFiltered.map(r => ({ id: r.id, title: r.title, year: r.year || (r.created_at ? new Date(r.created_at).getFullYear() : null), type: r.type, keywords: r.keywords, departments: r.departments })));
+
+      // compute department-level counts by inferred level
+      const counts = deptFiltered.reduce((acc, r) => {
+        const lvl = getResearchLevel(r);
+        if (lvl === 'postgraduate') {
+          acc.postgraduate += 1;
+          acc.total += 1;
+        } else if (lvl === 'undergraduate') {
+          acc.undergraduate += 1;
+          acc.total += 1;
+        }
+        // Unknowns are ignored in the count
+        return acc;
+      }, { total: 0, undergraduate: 0, postgraduate: 0 });
+      setDeptCounts(counts);
+
+      // compute per-year counts for dropdown labels
+      const yc = {};
+      const yearsSet = new Set();
+      deptFiltered.forEach(r => {
+        const y = r.year || (r.created_at ? new Date(r.created_at).getFullYear() : null);
+        if (y) {
+          yearsSet.add(y);
+          yc[y] = (yc[y] || 0) + 1;
+        }
+      });
+      setYearCounts(yc);
+      const years = Array.from(yearsSet).sort((a, b) => b - a);
+      setAvailableYears(years);
+    } else {
+      setAvailableYears([]);
+      setDeptCounts({ total: 0, undergraduate: 0, postgraduate: 0, unknown: 0 });
+      setYearCounts({});
+    }
 
     // apply year filter
     let byYear = filtered;
@@ -79,6 +169,8 @@ const CollegePage = () => {
       });
     }
 
+    // save debug snapshot of filtered and displayed
+    setFilteredDebug(filtered.map(r => ({ id: r.id, title: r.title, year: r.year || (r.created_at ? new Date(r.created_at).getFullYear() : null), type: r.type, keywords: r.keywords, departments: r.departments })));
     setDisplayedResearch(byYear);
   }, [allResearch, college, selectedDepartment, selectedLevel, selectedYear]);
 
@@ -169,48 +261,131 @@ const CollegePage = () => {
         {college.departments && college.departments.length > 0 && (
           <Row className="mb-5">
             <Col md={12}>
-              <h2 className="section-title mb-4"><FontAwesomeIcon icon={faGraduationCap} className="me-2" />Departments</h2>
+              <div className="text-center mb-3">
+                <h2 className="section-title departments-title mb-3">Departments</h2>
+
+                <div className="level-buttons-main d-flex justify-content-center mb-4">
+                  <Button
+                    className={`level-btn me-3 ${selectedLevel === 'undergraduate' ? 'active' : ''}`}
+                    size="lg"
+                    variant={selectedLevel === 'undergraduate' ? 'primary' : 'outline-primary'}
+                    onClick={() => { setSelectedLevel('undergraduate'); setSelectedDepartment(null); setSelectedYear('all'); }}
+                  >
+                    Undergraduate
+                  </Button>
+                  <Button
+                    className={`level-btn ${selectedLevel === 'postgraduate' ? 'active' : ''}`}
+                    size="lg"
+                    variant={selectedLevel === 'postgraduate' ? 'primary' : 'outline-primary'}
+                    onClick={() => { setSelectedLevel('postgraduate'); setSelectedDepartment(null); setSelectedYear('all'); }}
+                  >
+                    Postgraduate
+                  </Button>
+                </div>
+
+                {!selectedLevel && <p className="text-muted">Choose a level to view departments.</p>}
+              </div>
+
               <Row className="mb-3">
-                {college.departments.map((d, idx) => (
-                  <Col md={6} lg={4} key={idx} className="mb-3">
-                    <Card
-                      onClick={() => { setSelectedDepartment(d.name); setSelectedYear('all'); }}
-                      className={`department-card shadow-sm border-0 h-100 department-hover ${selectedDepartment === d.name ? 'selected-department' : ''}`}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <Card.Body className="p-3">
-                        <Card.Title className="mb-1">{d.name}</Card.Title>
-                        <div className="d-flex justify-content-between align-items-center mt-3">
-                          <Badge bg="primary">Undergraduate</Badge>
-                          <Button size="sm" variant="outline-primary" onClick={(e) => { e.stopPropagation(); setSelectedDepartment(d.name); setSelectedYear('all'); }}>
-                            View <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
-                          </Button>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
+                {selectedLevel && (
+                  (() => {
+                    const levelLabel = selectedLevel === 'undergraduate' ? 'Undergraduate' : 'Postgraduate';
+                    const filteredDepartments = (college.departments || []).filter(d => Array.isArray(d.programs) && d.programs.includes(levelLabel));
+                    // include any program names declared on the college that don't match departments exactly
+                    const collegePrograms = (selectedLevel === 'postgraduate' ? (college.postgraduate || []) : []);
+                    const deptNamesLower = (college.departments || []).map(d => d.name.toLowerCase());
+                    const extraPrograms = collegePrograms.filter(pg => !deptNamesLower.includes(String(pg).toLowerCase()));
+                    if (filteredDepartments.length === 0) {
+                      return <Col><p className="text-muted">No departments available for {levelLabel}.</p></Col>;
+                    }
+                    return (
+                      <>
+                        {filteredDepartments.map((d, idx) => (
+                          <Col md={6} lg={4} key={idx} className="mb-3">
+                            <Card
+                              onClick={() => { setSelectedDepartment(d.name); setSelectedYear('all'); setTimeout(() => { yearsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}
+                              className={`department-card shadow-sm border-0 h-100 department-hover ${selectedDepartment === d.name ? 'selected-department' : ''}`}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <Card.Body className="p-3">
+                                <Card.Title className="mb-1">{d.name}</Card.Title>
+                                <div className="d-flex justify-content-between align-items-center mt-3">
+                                  <Badge bg="secondary">{levelLabel}</Badge>
+                                  <Button size="sm" variant="outline-primary" onClick={(e) => { e.stopPropagation(); setSelectedDepartment(d.name); setSelectedYear('all'); setTimeout(() => { yearsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}>
+                                    View <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
+                                  </Button>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        ))}
+
+                        {extraPrograms.map((pg, i) => (
+                          <Col md={6} lg={4} key={`pg-${i}`} className="mb-3">
+                            <Card
+                              onClick={() => { setSelectedDepartment(pg); setSelectedYear('all'); setTimeout(() => { yearsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}
+                              className={`department-card shadow-sm border-0 h-100 department-hover ${selectedDepartment === pg ? 'selected-department' : ''}`}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <Card.Body className="p-3">
+                                <Card.Title className="mb-1">{pg}</Card.Title>
+                                <div className="d-flex justify-content-between align-items-center mt-3">
+                                  <Badge bg="secondary">{levelLabel}</Badge>
+                                  <Button size="sm" variant="outline-primary" onClick={(e) => { e.stopPropagation(); setSelectedDepartment(pg); setSelectedYear('all'); setTimeout(() => { yearsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}>
+                                    View <FontAwesomeIcon icon={faArrowRight} className="ms-1" />
+                                  </Button>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        ))}
+                      </>
+                    );
+                  })()
+                )}
               </Row>
 
-              {/* Level selector */}
-              <div className="mb-4">
-                <Button variant={selectedLevel === 'all' ? 'primary' : 'outline-primary'} size="sm" className="me-2" onClick={() => setSelectedLevel('all')}>All Levels</Button>
-                <Button variant={selectedLevel === 'undergraduate' ? 'primary' : 'outline-primary'} size="sm" className="me-2" onClick={() => setSelectedLevel('undergraduate')}>Undergraduate</Button>
-                <Button variant={selectedLevel === 'postgraduate' ? 'primary' : 'outline-primary'} size="sm" onClick={() => setSelectedLevel('postgraduate')}>Postgraduate</Button>
-              </div>
+              {/* Department Years section */}
+              {selectedDepartment && (
+                <div ref={yearsRef} className="department-years mb-4">
+                  <h4 className="mb-3">{selectedDepartment} – Publication Years</h4>
+                  {availableYears.length === 0 ? (
+                    <p className="text-muted">No publications found for {selectedDepartment}.</p>
+                  ) : (
+                    <div className="d-flex align-items-center">
+                      <DropdownButton
+                        id="years-dropdown"
+                        title={selectedYear === 'all' ? 'Select Year' : String(selectedYear)}
+                        variant="outline-secondary"
+                        className="me-3"
+                      >
+                        <Dropdown.Item
+                          active={selectedYear === 'all'}
+                          onClick={() => { setSelectedYear('all'); setTimeout(() => { researchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}
+                        >
+                          All Years ({deptCounts.total})
+                        </Dropdown.Item>
+                        {availableYears.map((y) => (
+                          <Dropdown.Item
+                            key={String(y)}
+                            active={String(selectedYear) === String(y)}
+                            onClick={() => { setSelectedYear(y); setTimeout(() => { researchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120); }}
+                          >
+                            {y} ({yearCounts[y] || 0})
+                          </Dropdown.Item>
+                        ))}
+                      </DropdownButton>
 
-              {/* Years filter */}
-              <div className="mb-3">
-                <span className="me-2">Filter by year:</span>
-                <Button size="sm" variant={selectedYear === 'all' ? 'primary' : 'outline-secondary'} className="me-2" onClick={() => setSelectedYear('all')}>All</Button>
-                {availableYears.length === 0 && <span className="text-muted">No publications found</span>}
-                {availableYears.map((y) => (
-                  <Button key={y} size="sm" variant={String(selectedYear) === String(y) ? 'primary' : 'outline-secondary'} className="me-2 mb-2" onClick={() => setSelectedYear(y)}>{y}</Button>
-                ))}
-              </div>
+                      <div className="text-muted small">
+                        {deptCounts.total} file(s) — {deptCounts.undergraduate} Undergraduate, {deptCounts.postgraduate} Postgraduate
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Research list for selected filters */}
-              <div>
+              <div ref={researchRef}>
                 {selectedDepartment ? (
                   <div>
                     <h5 className="mb-3">Showing research for <strong>{selectedDepartment}</strong> {selectedYear !== 'all' ? ` — ${selectedYear}` : ''}</h5>
@@ -220,17 +395,7 @@ const CollegePage = () => {
                       <Row>
                         {displayedResearch.map((r) => (
                           <Col md={6} lg={4} key={r.id} className="mb-3">
-                            <Card className="shadow-sm h-100">
-                              <Card.Body>
-                                <Card.Title className="mb-2">{r.title}</Card.Title>
-                                <Card.Subtitle className="mb-2 text-muted">{r.author} — {r.year || (r.created_at ? new Date(r.created_at).getFullYear() : '')}</Card.Subtitle>
-                                <p className="mb-2 text-truncate" style={{ maxHeight: '3.6rem' }}>{r.abstract}</p>
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                  <Link to={`/research/${r.id}`} className="btn btn-sm btn-outline-primary">Open</Link>
-                                  <small className="text-muted">{r.type}</small>
-                                </div>
-                              </Card.Body>
-                            </Card>
+                            <ResearchCard research={r} />
                           </Col>
                         ))}
                       </Row>
@@ -240,25 +405,13 @@ const CollegePage = () => {
                   <p className="text-muted">Select a department above to view publications grouped by year.</p>
                 )}
               </div>
+
+
             </Col>
           </Row>
         )}
 
-        {/* Postgraduate Section */}
-        {college.postgraduate && college.postgraduate.length > 0 && (
-          <Row className="mb-5">
-            <Col md={12}>
-              <h2 className="section-title mb-4"><FontAwesomeIcon icon={faBook} className="me-2" />Postgraduate Programs</h2>
-              <div className="postgraduate-grid">
-                {college.postgraduate.map((pg, idx) => (
-                  <div key={idx} className="postgraduate-item p-3 rounded-lg shadow-sm border border-light">
-                    <p className="mb-0 postgraduate-text">{pg}</p>
-                  </div>
-                ))}
-              </div>
-            </Col>
-          </Row>
-        )}
+        {/* Postgraduate section removed as requested */}
 
         {/* Contact Information Section */}
         {college.contact && (

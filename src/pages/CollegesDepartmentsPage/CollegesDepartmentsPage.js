@@ -8,7 +8,7 @@ import {
   faEnvelope,
   faPhone
 } from '@fortawesome/free-solid-svg-icons';
-import { getAllDepartments, getAllResearch, getResearchYearsByDepartment } from '../../supabase/database';
+import { getAllDepartments, getAllResearch } from '../../supabase/database';
 import './CollegesDepartmentsPage.css';
 import colleges from '../../data/collegesData';
 
@@ -16,9 +16,6 @@ const CollegesDepartmentsPage = () => {
   const [departments, setDepartments] = useState([]);
   const [researchCounts, setResearchCounts] = useState({});
   const [expandedCollege, setExpandedCollege] = useState(null);
-  const [yearsByDept, setYearsByDept] = useState({});
-  const [visibleYearsDept, setVisibleYearsDept] = useState({});
-  const [loadingYears, setLoadingYears] = useState({});
   const [departmentMap, setDepartmentMap] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -115,28 +112,6 @@ const CollegesDepartmentsPage = () => {
     }
     
     return count;
-  };
-
-  const loadYearsForDept = async (deptId) => {
-    if (!deptId) return;
-    // Avoid reloading if we already have years
-    if (yearsByDept[deptId]) {
-      setVisibleYearsDept(prev => ({ ...prev, [deptId]: !prev[deptId] }));
-      return;
-    }
-
-    setLoadingYears(prev => ({ ...prev, [deptId]: true }));
-    try {
-      const years = await getResearchYearsByDepartment(deptId);
-      setYearsByDept(prev => ({ ...prev, [deptId]: years }));
-      setVisibleYearsDept(prev => ({ ...prev, [deptId]: true }));
-    } catch (e) {
-      console.error('Error loading years for dept', deptId, e);
-      setYearsByDept(prev => ({ ...prev, [deptId]: [] }));
-      setVisibleYearsDept(prev => ({ ...prev, [deptId]: true }));
-    } finally {
-      setLoadingYears(prev => ({ ...prev, [deptId]: false }));
-    }
   };
 
   const toggleCollege = (collegeId) => {
@@ -346,38 +321,12 @@ const CollegesDepartmentsPage = () => {
                                         <p className="research-count mb-2">
                                           <Badge bg="primary">{count} Research Items</Badge>
                                         </p>
-                                        <div className="d-flex gap-2">
-                                          <Link 
-                                            to={`/browse?department=${deptData.id}`}
-                                            className="btn btn-sm btn-outline-primary"
-                                          >
-                                            View Research
-                                          </Link>
-                                          <Button 
-                                            variant="outline-secondary" 
-                                            size="sm"
-                                            onClick={() => loadYearsForDept(deptData.id)}
-                                          >
-                                            {loadingYears[deptData.id] ? 'Loading...' : 'Years'}
-                                          </Button>
-                                        </div>
-                                        {/* Years panel */}
-                                        {visibleYearsDept[deptData.id] && (
-                                          <div className="mt-2 years-panel">
-                                            <div className="d-flex flex-wrap gap-2">
-                                              <Link to={`/browse?department=${deptData.id}`} className="badge bg-secondary text-decoration-none p-2">All</Link>
-                                              {(yearsByDept[deptData.id] || []).map((y) => (
-                                                <Link 
-                                                  key={y}
-                                                  to={`/browse?department=${deptData.id}&year=${y}`}
-                                                  className="badge bg-light text-dark border p-2"
-                                                >
-                                                  {y}
-                                                </Link>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
+                                        <Link 
+                                          to={`/browse?department=${deptData.id}`}
+                                          className="btn btn-sm btn-outline-primary"
+                                        >
+                                          View Research
+                                        </Link>
                                       </>
                                     ) : (
                                       <p className="text-muted small mb-0">
@@ -393,72 +342,7 @@ const CollegesDepartmentsPage = () => {
                       </div>
                     )}
 
-                    {/* Postgraduate Programs */}
-                    {college.postgraduate && college.postgraduate.length > 0 && (
-                      <div className="programs-section">
-                        <h4 className="programs-title mb-3">
-                          <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
-                          Postgraduate Programs
-                        </h4>
-                        <Row>
-                          {college.postgraduate
-                            .filter(pg => departmentMatchesSearch(pg))
-                            .map((program, index) => {
-                              const deptData = findDepartmentByName(program);
-                              const count = deptData ? (researchCounts[deptData.id] || 0) : 0;
-                              return (
-                                <Col md={6} lg={4} key={index} className="mb-3">
-                                  <Card className="program-card">
-                                    <Card.Body>
-                                      <Card.Text className="mb-2">{program}</Card.Text>
-                                      {deptData ? (
-                                        <>
-                                          <div className="d-flex align-items-center justify-content-between mb-2">
-                                            <Badge bg="primary">{count} Research Items</Badge>
-                                            <div>
-                                              <Link 
-                                                to={`/browse?department=${deptData.id}`}
-                                                className="btn btn-sm btn-outline-primary me-2"
-                                              >
-                                                View Research
-                                              </Link>
-                                              <Button 
-                                                variant="outline-secondary" 
-                                                size="sm"
-                                                onClick={() => loadYearsForDept(deptData.id)}
-                                              >
-                                                {loadingYears[deptData.id] ? 'Loading...' : 'Years'}
-                                              </Button>
-                                            </div>
-                                          </div>
-                                          {visibleYearsDept[deptData.id] && (
-                                            <div className="mt-1 years-panel">
-                                              <div className="d-flex flex-wrap gap-2">
-                                                <Link to={`/browse?department=${deptData.id}`} className="badge bg-secondary text-decoration-none p-2">All</Link>
-                                                {(yearsByDept[deptData.id] || []).map((y) => (
-                                                  <Link 
-                                                    key={y}
-                                                    to={`/browse?department=${deptData.id}&year=${y}`}
-                                                    className="badge bg-light text-dark border p-2"
-                                                  >
-                                                    {y}
-                                                  </Link>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      ) : (
-                                        <small className="text-muted">No matching department</small>
-                                      )}
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              );
-                            })}
-                        </Row>
-                      </div>
-                    )}
+                    {/* Postgraduate section removed as requested */}
                   </Accordion.Body>
                 </Accordion.Item>
               ))}

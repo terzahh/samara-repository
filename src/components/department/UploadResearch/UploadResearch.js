@@ -14,6 +14,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
     author: '',
     department_id: departmentId || '',
     type: RESEARCH_TYPES.THESIS,
+    level: 'undergraduate', // new field
     year: new Date().getFullYear(),
     abstract: '',
     keywords: '',
@@ -134,6 +135,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
         author: '',
         department_id: departmentId || '',
         type: RESEARCH_TYPES.THESIS,
+        level: 'undergraduate',
         year: new Date().getFullYear(),
         abstract: '',
         keywords: '',
@@ -195,7 +197,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
           </Form.Group>
           
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="department_id">
                 <Form.Label>Department</Form.Label>
                 <Form.Select
@@ -215,8 +217,24 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            
-            <Col md={6}>
+            <Col md={4}>
+              <Form.Group className="mb-3" controlId="level">
+                <Form.Label>Level</Form.Label>
+                <Form.Select
+                  name="level"
+                  value={formData.level}
+                  onChange={handleChange}
+                  isInvalid={!!errors.level}
+                >
+                  <option value="undergraduate">Undergraduate</option>
+                  <option value="postgraduate">Postgraduate</option>
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {errors.level}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="type">
                 <Form.Label>Type</Form.Label>
                 <Form.Select
