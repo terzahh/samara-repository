@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Button, Modal, Form, Badge, Alert, InputGroup, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus, faKey, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { getUsers, changeUserRole } from '../../../services/userService';
+import { faEdit, faPlus, faKey, faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { getUsers, changeUserRole, deleteUser } from '../../../services/userService';
 import { getAllRoles, getAllDepartments } from '../../../supabase/database';
 import { getRoleLabel } from '../../../utils/helpers';
 import { registerUser, adminResetUserPassword, adminGenerateResetLink } from '../../../supabase/customAuth';
@@ -25,6 +25,7 @@ const UserManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [showResetLinkModal, setShowResetLinkModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [resetPasswordData, setResetPasswordData] = useState({
     newPassword: '',
@@ -298,6 +299,33 @@ const UserManagement = () => {
     });
   };
 
+  const handleDeleteUser = (user) => {
+    setSelectedUser(user);
+    setShowDeleteModal(true);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedUser) return;
+
+    try {
+      await deleteUser(selectedUser.id);
+
+      // Refresh users list
+      const usersList = await getUsers();
+      setUsers(usersList);
+
+      setSuccess(`User "${selectedUser.display_name}" has been deleted successfully`);
+      setShowDeleteModal(false);
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setError(error.message || 'Failed to delete user. Please try again.');
+      setShowDeleteModal(false);
+    }
+  };
+
   const getRoleBadgeVariant = (role) => {
     switch (role) {
       case 'admin':
@@ -336,7 +364,7 @@ const UserManagement = () => {
             style={{ minWidth: 160 }}
           >
             <option value="all">All Roles</option>
-            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
           <Form.Select
             value={departmentFilter}
@@ -370,7 +398,7 @@ const UserManagement = () => {
             disabled={selectedUserIds.size === 0}
           >
             <option value="">Bulk change role...</option>
-            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
         </div>
         <div className="text-muted small">
@@ -435,6 +463,14 @@ const UserManagement = () => {
                   >
                     <FontAwesomeIcon icon={faCopy} />
                   </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => handleDeleteUser(user)}
+                    title="Delete User"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </Button>
                 </div>
               </td>
             </tr>
@@ -478,7 +514,7 @@ const UserManagement = () => {
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
                 >
-                  {roles.filter(role => role.name !== 'guest').map(role => (
+                  {roles.map(role => (
                     <option key={role.id} value={role.name}>{role.name}</option>
                   ))}
                 </Form.Select>
@@ -554,7 +590,7 @@ const UserManagement = () => {
                 value={newUser.role}
                 onChange={handleNewUserChange}
               >
-                {roles.filter(role => role.name !== 'guest').map(role => (
+                {roles.map(role => (
                   <option key={role.id} value={role.name}>
                     {getRoleLabel(role.name)}
                   </option>
@@ -684,6 +720,41 @@ const UserManagement = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowResetLinkModal(false)}>
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete User Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedUser && (
+            <>
+              <Alert variant="danger">
+                <strong>Warning:</strong> This action cannot be undone!
+              </Alert>
+              <p>
+                Are you sure you want to delete the following user?
+              </p>
+              <div className="bg-light p-3 rounded">
+                <p className="mb-1"><strong>Name:</strong> {selectedUser.display_name}</p>
+                <p className="mb-1"><strong>Email:</strong> {selectedUser.email}</p>
+                <p className="mb-0"><strong>Role:</strong> {getRoleLabel(selectedUser.roles.name)}</p>
+              </div>
+              <p className="mt-3 text-muted small">
+                All associated data (comments, bookmarks, etc.) may also be affected.
+              </p>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            Delete User
           </Button>
         </Modal.Footer>
       </Modal>
