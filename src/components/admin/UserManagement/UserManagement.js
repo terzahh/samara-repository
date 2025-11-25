@@ -42,7 +42,7 @@ const UserManagement = () => {
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,10 +59,10 @@ const UserManagement = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
-  
+
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setNewRole(user.roles.name);
@@ -121,17 +121,17 @@ const UserManagement = () => {
       setLoading(false);
     }
   };
-  
+
   const handleSaveChanges = async () => {
     if (!selectedUser || !newRole) return;
-    
+
     try {
       await changeUserRole(selectedUser.id, newRole);
-      
+
       // Refresh users list
       const usersList = await getUsers();
       setUsers(usersList);
-      
+
       setSuccess(`User role updated successfully to ${getRoleLabel(newRole)}`);
       setShowEditModal(false);
       setSelectedUser(null);
@@ -166,35 +166,35 @@ const UserManagement = () => {
 
   const validateNewUser = () => {
     const newErrors = {};
-    
+
     if (!validateRequired(newUser.displayName)) {
       newErrors.displayName = 'Name is required';
     }
-    
+
     if (!validateEmail(newUser.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!validatePassword(newUser.password)) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (newUser.role === 'department_head' && !newUser.departmentId) {
       newErrors.departmentId = 'Department is required for Department Heads';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleCreateUser = async () => {
     if (!validateNewUser()) return;
-    
+
     try {
       // Store admin session before creating user (registerUser will create a session for the new user)
       const adminUser = JSON.parse(localStorage.getItem('user') || 'null');
       const adminToken = localStorage.getItem('auth_token');
-      
+
       // Create user using registerUser
       const createdUser = await registerUser(
         newUser.email,
@@ -202,7 +202,7 @@ const UserManagement = () => {
         newUser.displayName,
         newUser.role
       );
-      
+
       // Restore admin session after user creation
       if (adminUser && adminUser.id !== createdUser.id) {
         localStorage.setItem('user', JSON.stringify(adminUser));
@@ -210,17 +210,17 @@ const UserManagement = () => {
           localStorage.setItem('auth_token', adminToken);
         }
       }
-      
+
       // If department head, update department
       if (newUser.role === 'department_head' && newUser.departmentId && createdUser.id) {
         const { updateUserProfile } = await import('../../../supabase/customAuth');
         await updateUserProfile(createdUser.id, { department_id: newUser.departmentId });
       }
-      
+
       // Refresh users list
       const usersList = await getUsers();
       setUsers(usersList);
-      
+
       setSuccess('User created successfully!');
       setShowAddModal(false);
       setNewUser({
@@ -235,7 +235,7 @@ const UserManagement = () => {
       setError(error.message || 'Failed to create user. Please try again.');
     }
   };
-  
+
   const handleResetPassword = (user) => {
     setSelectedUser(user);
     setResetPasswordData({ newPassword: '', confirmPassword: '' });
@@ -310,16 +310,16 @@ const UserManagement = () => {
         return 'secondary';
     }
   };
-  
+
   if (loading) {
     return <Loading message="Loading users..." />;
   }
-  
+
   return (
     <div className="user-management">
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
-      
+
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
         <h3 className="mb-0">User Management</h3>
         <div className="d-flex flex-wrap gap-2">
@@ -336,7 +336,7 @@ const UserManagement = () => {
             style={{ minWidth: 160 }}
           >
             <option value="all">All Roles</option>
-            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
           <Form.Select
             value={departmentFilter}
@@ -370,14 +370,14 @@ const UserManagement = () => {
             disabled={selectedUserIds.size === 0}
           >
             <option value="">Bulk change role...</option>
-            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
         </div>
         <div className="text-muted small">
           {filteredUsers.length} result(s)
         </div>
       </div>
-      
+
       <Table striped bordered hover responsive>
         <thead>
           <tr>
@@ -411,25 +411,25 @@ const UserManagement = () => {
               <td>{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
               <td>
                 <div className="d-flex gap-2">
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => handleEditUser(user)}
                     title="Edit Role"
                   >
                     <FontAwesomeIcon icon={faEdit} />
                   </Button>
-                  <Button 
-                    variant="outline-warning" 
-                    size="sm" 
+                  <Button
+                    variant="outline-warning"
+                    size="sm"
                     onClick={() => handleResetPassword(user)}
                     title="Reset Password"
                   >
                     <FontAwesomeIcon icon={faKey} />
                   </Button>
-                  <Button 
-                    variant="outline-info" 
-                    size="sm" 
+                  <Button
+                    variant="outline-info"
+                    size="sm"
                     onClick={() => handleGenerateResetLink(user)}
                     title="Generate Reset Link"
                   >
@@ -455,7 +455,7 @@ const UserManagement = () => {
           </Pagination>
         </div>
       )}
-      
+
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edit User Role</Modal.Title>
@@ -471,14 +471,14 @@ const UserManagement = () => {
                   disabled
                 />
               </Form.Group>
-              
+
               <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
                 <Form.Select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
                 >
-                  {roles.map(role => (
+                  {roles.filter(role => role.name !== 'guest').map(role => (
                     <option key={role.id} value={role.name}>{role.name}</option>
                   ))}
                 </Form.Select>
@@ -554,7 +554,7 @@ const UserManagement = () => {
                 value={newUser.role}
                 onChange={handleNewUserChange}
               >
-                {roles.map(role => (
+                {roles.filter(role => role.name !== 'guest').map(role => (
                   <option key={role.id} value={role.name}>
                     {getRoleLabel(role.name)}
                   </option>
@@ -604,7 +604,7 @@ const UserManagement = () => {
               <Alert variant="info" className="mb-3">
                 Resetting password for: <strong>{selectedUser.display_name}</strong> ({selectedUser.email})
               </Alert>
-              
+
               <Form.Group className="mb-3">
                 <Form.Label>New Password *</Form.Label>
                 <Form.Control
@@ -650,7 +650,7 @@ const UserManagement = () => {
               <Alert variant="success">
                 <strong>Reset link generated for:</strong> {selectedUser.display_name} ({selectedUser.email})
               </Alert>
-              
+
               <Form.Group className="mb-3">
                 <Form.Label>Reset Link</Form.Label>
                 <div className="d-flex gap-2">
