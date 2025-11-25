@@ -364,7 +364,7 @@ const UserManagement = () => {
             style={{ minWidth: 160 }}
           >
             <option value="all">All Roles</option>
-            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
           <Form.Select
             value={departmentFilter}
@@ -398,7 +398,7 @@ const UserManagement = () => {
             disabled={selectedUserIds.size === 0}
           >
             <option value="">Bulk change role...</option>
-            {roles.map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
+            {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
         </div>
         <div className="text-muted small">
@@ -514,7 +514,7 @@ const UserManagement = () => {
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
                 >
-                  {roles.map(role => (
+                  {roles.filter(role => role.name !== 'guest').map(role => (
                     <option key={role.id} value={role.name}>{role.name}</option>
                   ))}
                 </Form.Select>
@@ -590,7 +590,7 @@ const UserManagement = () => {
                 value={newUser.role}
                 onChange={handleNewUserChange}
               >
-                {roles.map(role => (
+                {roles.filter(role => role.name !== 'guest').map(role => (
                   <option key={role.id} value={role.name}>
                     {getRoleLabel(role.name)}
                   </option>
