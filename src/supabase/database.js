@@ -280,7 +280,7 @@ export const getAllUsers = async () => {
       .select(`
         *,
         roles(name),
-        departments(name)
+        departments(id, name)
       `)
       .order('created_at', { ascending: false });
 

@@ -129,6 +129,37 @@ const UserManagement = () => {
     if (!selectedUser || !newRole) return;
 
     try {
+      // Validate department head assignment
+      if (newRole === 'department_head') {
+        if (!newDepartmentId) {
+          setError('Please select a department for the department head.');
+          return;
+        }
+
+        // Check if another user is already department head of this department
+        const existingHead = users.find(
+          u => u.id !== selectedUser.id &&
+            u.roles.name === 'department_head' &&
+            String(u.departments?.id) === String(newDepartmentId)
+        );
+
+        console.log('Validation check:', {
+          newDepartmentId,
+          existingHead,
+          allDeptHeads: users.filter(u => u.roles.name === 'department_head').map(u => ({
+            name: u.display_name,
+            deptId: u.departments?.id,
+            deptName: u.departments?.name
+          }))
+        });
+
+        if (existingHead) {
+          const dept = departments.find(d => d.id === newDepartmentId);
+          setError(`${existingHead.display_name} is already the department head of ${dept?.name || 'this department'}. A department can only have one head.`);
+          return;
+        }
+      }
+
       // Pass department ID if role is department_head
       const departmentId = newRole === 'department_head' ? newDepartmentId : null;
       await changeUserRole(selectedUser.id, newRole, departmentId);
@@ -194,9 +225,48 @@ const UserManagement = () => {
   };
 
   const handleCreateUser = async () => {
-    if (!validateNewUser()) return;
+    if (!validateNewUser()) {
+      // Close modal quickly but keep error indicators visible longer
+      setTimeout(() => setShowAddModal(false), 1500);
+      setTimeout(() => setErrors({}), 5000);
+      return;
+    }
 
     try {
+      // Refresh users list to get latest data before validation
+      const latestUsers = await getUsers();
+
+      // Additional validation for department head
+      if (newUser.role === 'department_head') {
+        // Check if another user is already department head of this department
+        const existingHead = latestUsers.find(
+          u => u.roles.name === 'department_head' &&
+            String(u.departments?.id) === String(newUser.departmentId)
+        );
+
+        console.log('Create user validation:', {
+          departmentId: newUser.departmentId,
+          existingHead: existingHead ? {
+            name: existingHead.display_name,
+            deptId: existingHead.departments?.id
+          } : null,
+          allDeptHeads: latestUsers.filter(u => u.roles.name === 'department_head').map(u => ({
+            name: u.display_name,
+            deptId: u.departments?.id,
+            deptName: u.departments?.name
+          }))
+        });
+
+        if (existingHead) {
+          const dept = departments.find(d => d.id === newUser.departmentId);
+          setError(`${existingHead.display_name} is already the department head of ${dept?.name || 'this department'}. A department can only have one head.`);
+          // Close modal quickly but keep error message visible longer
+          setTimeout(() => setShowAddModal(false), 1500);
+          setTimeout(() => setError(''), 5000);
+          return;
+        }
+      }
+
       // Store admin session before creating user (registerUser will create a session for the new user)
       const adminUser = JSON.parse(localStorage.getItem('user') || 'null');
       const adminToken = localStorage.getItem('auth_token');
@@ -239,6 +309,9 @@ const UserManagement = () => {
     } catch (error) {
       console.error('Error creating user:', error);
       setError(error.message || 'Failed to create user. Please try again.');
+      // Close modal quickly but keep error message visible longer
+      setTimeout(() => setShowAddModal(false), 1500);
+      setTimeout(() => setError(''), 5000);
     }
   };
 
