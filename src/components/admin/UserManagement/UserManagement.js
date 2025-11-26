@@ -17,7 +17,6 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
-  const [departmentFilter, setDepartmentFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const [selectedUserIds, setSelectedUserIds] = useState(new Set());
@@ -78,11 +77,10 @@ const UserManagement = () => {
     const term = searchText.toLowerCase().trim();
     return users.filter(u => {
       const roleMatch = roleFilter === 'all' || u.roles?.name === roleFilter;
-      const deptMatch = departmentFilter === 'all' || (u.departments?.id === departmentFilter || u.departments?.name === departmentFilter);
       const textMatch = !term || [u.display_name, u.email, u.departments?.name].some(v => (v || '').toLowerCase().includes(term));
-      return roleMatch && deptMatch && textMatch;
+      return roleMatch && textMatch;
     });
-  }, [users, searchText, roleFilter, departmentFilter]);
+  }, [users, searchText, roleFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
   const pagedUsers = useMemo(() => {
@@ -444,14 +442,7 @@ const UserManagement = () => {
             <option value="all">All Roles</option>
             {roles.filter(r => r.name !== 'guest').map(r => <option key={r.id} value={r.name}>{getRoleLabel(r.name)}</option>)}
           </Form.Select>
-          <Form.Select
-            value={departmentFilter}
-            onChange={(e) => { setDepartmentFilter(e.target.value); setCurrentPage(1); }}
-            style={{ minWidth: 200 }}
-          >
-            <option value="all">All Departments</option>
-            {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </Form.Select>
+
           <Button variant="primary" onClick={handleAddUser}>
             <FontAwesomeIcon icon={faPlus} className="me-2" />
             Add User
