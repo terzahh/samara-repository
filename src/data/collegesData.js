@@ -18,6 +18,10 @@ const colleges = [
       { name: 'History and Heritage Management', programs: ['Undergraduate'] },
       { name: 'Journalism and Communication', programs: ['Undergraduate'] },
       { name: 'Archeology', programs: ['Undergraduate'] },
+      { name: 'Disaster Risk Management and Pastoral Development', programs: ['Postgraduate'] },
+      { name: 'Applied Linguistics and Communication in Afar Af', programs: ['Postgraduate'] },
+      { name: 'Applied Linguistics in Afar Af teaching', programs: ['Postgraduate'] },
+      { name: 'Educational Planning and Pastoral Education', programs: ['Postgraduate'] },
     ],
     postgraduate: [
       'Disaster Risk Management and Pastoral Development',
@@ -78,6 +82,9 @@ const colleges = [
       { name: 'Biomedical Sciences', programs: ['Undergraduate'] },
       { name: 'Health Informatics', programs: ['Undergraduate'] },
       { name: 'School of Medicine', programs: ['Undergraduate'] },
+      { name: 'General Public Health', programs: ['Postgraduate'] },
+      { name: 'Public Health in Nutrition', programs: ['Postgraduate'] },
+      { name: 'Public Health in Reproductive Health', programs: ['Postgraduate'] },
     ],
     postgraduate: [
       'General Public Health',
@@ -99,6 +106,9 @@ const colleges = [
       { name: 'Management', programs: ['Undergraduate'] },
       { name: 'Marketing Management', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Logistics and Supply Chain Management', programs: ['Undergraduate'] },
+      { name: 'Development Economics', programs: ['Postgraduate'] },
+      { name: 'Business Administration', programs: ['Postgraduate'] },
+      { name: 'Project Planning and Management', programs: ['Postgraduate'] },
     ],
     postgraduate: [
       'Accounting and Finance',
@@ -119,6 +129,7 @@ const colleges = [
     departments: [
       { name: 'Veterinary Medicine', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Animal Science', programs: ['Undergraduate'] },
+      { name: 'Veterinary Public Health', programs: ['Postgraduate'] },
     ],
     postgraduate: ['Veterinary Public Health'],
     contact: { name: 'TBD', title: 'Dean', email: 'cvmv@su.edu.et', phone: '+251911444444' }
@@ -136,9 +147,11 @@ const colleges = [
       { name: 'Computer Science', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Information Technology', programs: ['Undergraduate', 'Postgraduate'] },
       { name: 'Mechanical Engineering', programs: ['Undergraduate'] },
-      { name: 'Electrical & Computer Engineering', programs: ['Undergraduate'] },
+      { name: 'Electrical & Computer Engineering', programs: ['Undergraduate'], streams: ['Communication', 'Power'] },
       { name: 'Construction Technology Management', programs: ['Undergraduate'] },
       { name: 'Water Resource & Irrigation Engineering', programs: ['Undergraduate'] },
+      { name: 'Road and Transport Studies', programs: ['Postgraduate'] },
+      { name: 'Structural Engineering', programs: ['Postgraduate'] },
     ],
     postgraduate: [
       'Computer Science',

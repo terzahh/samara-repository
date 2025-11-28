@@ -19,56 +19,77 @@ const SignupForm = () => {
     departmentId: ''
   });
   const [departments, setDepartments] = useState([]);
-  const [postgraduateCourses, setPostgraduateCourses] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    // Collect all departments (UG/PG) from collegesData
-    const allDepts = [];
-    colleges.forEach(college => {
-      if (Array.isArray(college.departments)) {
-        college.departments.forEach(dept => {
-          allDepts.push({
-            name: dept.name,
-            college: college.name,
-            programs: dept.programs || []
-          });
+    const fetchDepartments = async () => {
+      try {
+        // Fetch actual department data from database to get UUIDs
+        const dbDepartments = await getAllDepartments();
+
+        // Create a map of department name to ID
+        const deptMap = {};
+        dbDepartments.forEach(dept => {
+          deptMap[dept.name] = dept.id;
         });
+
+        // Collect all departments from collegesData and match with DB IDs
+        const allDepts = [];
+        colleges.forEach(college => {
+          if (Array.isArray(college.departments)) {
+            college.departments.forEach(dept => {
+              // Only include if department exists in database
+              if (deptMap[dept.name]) {
+                allDepts.push({
+                  id: deptMap[dept.name], // UUID from database
+                  name: dept.name,
+                  college: college.name,
+                  programs: dept.programs || []
+                });
+              }
+            });
+          }
+        });
+        // Sort alphabetically by department name
+        allDepts.sort((a, b) => a.name.localeCompare(b.name));
+        setDepartments(allDepts);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+        setError('Failed to load departments. Please refresh the page.');
       }
-    });
-    // Sort alphabetically by department name
-    allDepts.sort((a, b) => a.name.localeCompare(b.name));
-    setDepartments(allDepts);
+    };
+
+    fetchDepartments();
   }, []);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-  
+
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!validateRequired(formData.displayName)) {
       newErrors.displayName = 'Name is required';
     }
-    
+
     if (!validateEmail(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!validatePassword(formData.password)) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
@@ -76,27 +97,27 @@ const SignupForm = () => {
     if (formData.registrationType === 'department_head' && !formData.departmentId) {
       newErrors.departmentId = 'Please select a department';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     setError('');
     setSuccess('');
-    
+
     try {
-      const role = formData.registrationType === 'department_head' 
-        ? ROLES.DEPARTMENT_HEAD 
+      const role = formData.registrationType === 'department_head'
+        ? ROLES.DEPARTMENT_HEAD
         : ROLES.USER;
-      
-      const departmentId = formData.registrationType === 'department_head' 
-        ? formData.departmentId 
+
+      const departmentId = formData.registrationType === 'department_head'
+        ? formData.departmentId
         : null;
 
       // Register user - department heads will need admin approval
@@ -134,15 +155,15 @@ const SignupForm = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <Card className="signup-form-card">
       <Card.Body>
         <Card.Title className="text-center mb-4">Sign Up</Card.Title>
-        
+
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
-        
+
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Registration Type</Form.Label>
@@ -180,7 +201,7 @@ const SignupForm = () => {
               >
                 <option value="">Select Department</option>
                 {departments.map((dept, idx) => (
-                  <option key={idx} value={dept.name}>{dept.name} ({dept.college})</option>
+                  <option key={idx} value={dept.id}>{dept.name} ({dept.college})</option>
                 ))}
               </Form.Select>
               <Form.Control.Feedback type="invalid">
@@ -202,7 +223,7 @@ const SignupForm = () => {
               {errors.displayName}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email address</Form.Label>
             <Form.Control
@@ -217,7 +238,7 @@ const SignupForm = () => {
               {errors.email}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control
@@ -232,7 +253,7 @@ const SignupForm = () => {
               {errors.password}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="confirmPassword">
             <Form.Label>Confirm Password</Form.Label>
             <Form.Control
@@ -247,14 +268,14 @@ const SignupForm = () => {
               {errors.confirmPassword}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <div className="d-grid gap-2">
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </div>
         </Form>
-        
+
         <div className="text-center mt-3">
           <p>
             Already have an account? <Link to="/login">Login</Link>

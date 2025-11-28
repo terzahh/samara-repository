@@ -82,8 +82,10 @@ export const createResearch = async (researchData, file) => {
       researchData.file_path = filePath;
     }
 
-    // Sanitize payload: remove unsupported 'level' column to avoid schema errors
+    // Sanitize payload: remove unsupported 'level' and 'stream' columns to avoid schema errors
     const payload = { ...researchData };
+
+    // Handle level
     const level = payload.level;
     if (level) {
       // append level tag to keywords so we keep the information searchable
@@ -93,8 +95,23 @@ export const createResearch = async (researchData, file) => {
       if (!existingKeywords.includes(levelTag)) {
         payload.keywords = existingKeywords ? `${existingKeywords}, ${levelTag}` : levelTag;
       }
-      delete payload.level;
     }
+    // Always remove level from payload as it's not in the schema
+    delete payload.level;
+
+    // Handle stream
+    const stream = payload.stream;
+    if (stream) {
+      // append stream tag to keywords
+      const existingKeywords = payload.keywords || '';
+      const streamTag = `stream:${stream}`;
+      // avoid duplicating tag
+      if (!existingKeywords.includes(streamTag)) {
+        payload.keywords = existingKeywords ? `${existingKeywords}, ${streamTag}` : streamTag;
+      }
+    }
+    // Always remove stream from payload as it's not in the schema
+    delete payload.stream;
 
     const result = await addResearch(payload);
     return result;
@@ -132,8 +149,10 @@ export const editResearch = async (id, researchData, file) => {
       researchData.file_path = filePath;
     }
 
-    // Sanitize payload: remove unsupported 'level' column to avoid schema errors
+    // Sanitize payload: remove unsupported 'level' and 'stream' columns to avoid schema errors
     const payload = { ...researchData };
+
+    // Handle level
     const level = payload.level;
     if (level) {
       const existingKeywords = payload.keywords || '';
@@ -141,8 +160,21 @@ export const editResearch = async (id, researchData, file) => {
       if (!existingKeywords.includes(levelTag)) {
         payload.keywords = existingKeywords ? `${existingKeywords}, ${levelTag}` : levelTag;
       }
-      delete payload.level;
     }
+    // Always remove level from payload
+    delete payload.level;
+
+    // Handle stream
+    const stream = payload.stream;
+    if (stream) {
+      const existingKeywords = payload.keywords || '';
+      const streamTag = `stream:${stream}`;
+      if (!existingKeywords.includes(streamTag)) {
+        payload.keywords = existingKeywords ? `${existingKeywords}, ${streamTag}` : streamTag;
+      }
+    }
+    // Always remove stream from payload
+    delete payload.stream;
 
     const result = await updateResearch(id, payload);
     return result;

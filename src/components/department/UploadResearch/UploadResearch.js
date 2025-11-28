@@ -5,6 +5,7 @@ import { RESEARCH_TYPES, ACCESS_LEVELS } from '../../../utils/constants';
 import { validateResearchForm } from '../../../utils/validators';
 import { getAllDepartments } from '../../../supabase/database';
 import { useAuth } from '../../../hooks/useAuth';
+import collegesData from '../../../data/collegesData';
 import './UploadResearch.css';
 
 const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
@@ -13,6 +14,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
     title: '',
     author: '',
     department_id: departmentId || '',
+    stream: '', // for departments with streams (e.g., Electrical Engineering)
     type: RESEARCH_TYPES.THESIS,
     level: 'undergraduate', // new field
     year: new Date().getFullYear(),
@@ -27,7 +29,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
   const [savingDraft, setSavingDraft] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  
+
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -37,9 +39,9 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
         console.error('Error fetching departments:', error);
       }
     };
-    
+
     fetchDepartments();
-    
+
     // Load draft from localStorage
     const draftKey = `research_draft_${user?.id || 'anonymous'}`;
     const savedDraft = localStorage.getItem(draftKey);
@@ -52,46 +54,59 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
       }
     }
   }, [user?.id]);
-  
+
   useEffect(() => {
     if (departmentId) {
       setFormData(prev => ({ ...prev, department_id: departmentId }));
     }
   }, [departmentId]);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
+    // Clear stream if department changes to one without streams
+    if (name === 'department_id') {
+      const selectedDept = departments.find(d => d.id === value);
+      const deptName = selectedDept?.name || '';
+      const hasStreams = collegesData
+        .flatMap(college => college.departments || [])
+        .find(dept => dept.name === deptName)?.streams;
+
+      if (!hasStreams) {
+        setFormData(prev => ({ ...prev, stream: '' }));
+      }
+    }
+
     // Clear errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-  
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
     }
   };
-  
+
   const validateForm = () => {
     const { isValid, errors } = validateResearchForm(formData);
     setErrors(errors);
     return isValid;
   };
-  
+
   const handleSaveDraft = async () => {
     setSavingDraft(true);
     setError('');
     setSuccessMessage('');
-    
+
     try {
       // Save draft to localStorage
       const draftKey = `research_draft_${user?.id || 'anonymous'}`;
       localStorage.setItem(draftKey, JSON.stringify(formData));
-      
+
       setSuccessMessage('Draft saved successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
@@ -104,36 +119,37 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     if (!file) {
       setError('Please select a file to upload');
       return;
     }
-    
+
     setLoading(true);
     setError('');
     setSuccessMessage('');
-    
+
     try {
       const researchData = {
         ...formData,
         uploaded_by: user?.id || null,
         approved: true // Auto-approve for now (can be changed based on role)
       };
-      
+
       await createResearch(researchData, file);
-      
+
       // Clear draft from localStorage
       const draftKey = `research_draft_${user?.id || 'anonymous'}`;
       localStorage.removeItem(draftKey);
-      
+
       // Reset form
       setFormData({
         title: '',
         author: '',
         department_id: departmentId || '',
+        stream: '',
         type: RESEARCH_TYPES.THESIS,
         level: 'undergraduate',
         year: new Date().getFullYear(),
@@ -142,7 +158,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
         access_level: ACCESS_LEVELS.PUBLIC
       });
       setFile(null);
-      
+
       // Close modal and notify parent
       onHide();
       if (onUploadSuccess) {
@@ -155,7 +171,15 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
       setLoading(false);
     }
   };
-  
+
+  // Get available streams for selected department
+  const selectedDept = departments.find(d => d.id === formData.department_id);
+  const selectedDeptName = selectedDept?.name || '';
+
+  const departmentStreams = collegesData
+    .flatMap(college => college.departments || [])
+    .find(dept => dept.name === selectedDeptName)?.streams || [];
+
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header closeButton>
@@ -164,7 +188,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
       <Modal.Body>
         {error && <Alert variant="danger">{error}</Alert>}
         {successMessage && <Alert variant="success">{successMessage}</Alert>}
-        
+
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="title">
             <Form.Label>Title</Form.Label>
@@ -180,7 +204,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               {errors.title}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="author">
             <Form.Label>Author</Form.Label>
             <Form.Control
@@ -195,7 +219,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               {errors.author}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Row>
             <Col md={4}>
               <Form.Group className="mb-3" controlId="department_id">
@@ -217,7 +241,31 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            <Col md={4}>
+
+            {/* Stream dropdown - only show if department has streams */}
+            {departmentStreams.length > 0 && (
+              <Col md={4}>
+                <Form.Group className="mb-3" controlId="stream">
+                  <Form.Label>Stream</Form.Label>
+                  <Form.Select
+                    name="stream"
+                    value={formData.stream}
+                    onChange={handleChange}
+                    isInvalid={!!errors.stream}
+                  >
+                    <option value="">Select Stream</option>
+                    {departmentStreams.map(stream => (
+                      <option key={stream} value={stream}>{stream}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.stream}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            )}
+
+            <Col md={departmentStreams.length > 0 ? 4 : 4}>
               <Form.Group className="mb-3" controlId="level">
                 <Form.Label>Level</Form.Label>
                 <Form.Select
@@ -234,7 +282,10 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            <Col md={4}>
+          </Row>
+
+          <Row>
+            <Col md={12}>
               <Form.Group className="mb-3" controlId="type">
                 <Form.Label>Type</Form.Label>
                 <Form.Select
@@ -255,7 +306,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               </Form.Group>
             </Col>
           </Row>
-          
+
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3" controlId="year">
@@ -272,7 +323,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            
+
             <Col md={6}>
               <Form.Group className="mb-3" controlId="access_level">
                 <Form.Label>Access Level</Form.Label>
@@ -287,7 +338,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               </Form.Group>
             </Col>
           </Row>
-          
+
           <Form.Group className="mb-3" controlId="abstract">
             <Form.Label>Abstract</Form.Label>
             <Form.Control
@@ -303,7 +354,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               {errors.abstract}
             </Form.Control.Feedback>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="keywords">
             <Form.Label>Keywords</Form.Label>
             <Form.Control
@@ -321,7 +372,7 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
               Separate keywords with commas
             </Form.Text>
           </Form.Group>
-          
+
           <Form.Group className="mb-3" controlId="file">
             <Form.Label>Research File</Form.Label>
             <Form.Control
@@ -339,9 +390,9 @@ const UploadResearch = ({ show, onHide, onUploadSuccess, departmentId }) => {
         <Button variant="secondary" onClick={onHide}>
           Cancel
         </Button>
-        <Button 
-          variant="outline-secondary" 
-          onClick={handleSaveDraft} 
+        <Button
+          variant="outline-secondary"
+          onClick={handleSaveDraft}
           disabled={savingDraft}
           className="me-2"
         >

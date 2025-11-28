@@ -13,7 +13,7 @@
 }
 
 .research-card .card-header {
-  background: linear-gradient(90deg, rgba(45,123,168,0.08), rgba(45,123,168,0.02));
+  background: linear-gradient(90deg, rgba(45, 123, 168, 0.08), rgba(45, 123, 168, 0.02));
   border-bottom: none;
   padding: 10px 15px;
   display: flex;
@@ -69,39 +69,6 @@
   opacity: 0.22;
 }
 
-.research-author {
-  font-size: 14px;
-  margin-bottom: 15px !important;
-}
-
-.research-abstract {
-  font-size: 14px;
-  color: #475569;
-  margin-bottom: 14px;
-  flex-grow: 1;
-  line-height: 1.6;
-  /* subtle fade for overflow */
-  max-height: 3.4em;
-  overflow: hidden;
-  position: relative;
-}
-
-.research-abstract::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  height: 1.2em;
-  width: 60%;
-  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,1));
-  pointer-events: none;
-}
-
-.research-meta {
-  margin-top: auto;
-  margin-bottom: 10px;
-}
-
 .research-card .card-footer {
   background-color: transparent;
   border-top: none;
@@ -154,7 +121,7 @@
 .research-actions .btn-outline-primary:hover {
   color: var(--text-white);
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 8px 28px rgba(45,123,168,0.12);
+  box-shadow: 0 8px 28px rgba(45, 123, 168, 0.12);
   border-color: var(--primary-color);
 }
 
@@ -195,7 +162,7 @@
 .research-actions .btn-outline-success:hover {
   color: var(--text-white);
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 8px 28px rgba(40,167,69,0.12);
+  box-shadow: 0 8px 28px rgba(40, 167, 69, 0.12);
   border-color: #28a745;
 }
 
