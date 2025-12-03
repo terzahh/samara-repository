@@ -110,8 +110,13 @@ const ResearchList = () => {
         <Alert variant="info" className="text-center">
           <FontAwesomeIcon icon={faSearch} className="me-2" />
           {!isAuthenticated 
-            ? 'No public research found. Please log in to access restricted research.'
-            : 'No research found matching your criteria.'}
+            ? 'No public research found matching your criteria. Please log in to access restricted research.'
+            : 'No research found matching your criteria. Try adjusting your filters or search terms.'}
+          {filters.department && (
+            <div className="mt-2">
+              <small>Currently filtering by department. <Button variant="link" size="sm" onClick={() => setFilters({ department: '' })}>Clear department filter</Button></small>
+            </div>
+          )}
         </Alert>
       ) : (
         <>

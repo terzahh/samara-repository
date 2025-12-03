@@ -1,0 +1,107 @@
+// Session security constants and utilities
+
+// Session duration: 24 hours in milliseconds
+export const SESSION_DURATION = 24 * 60 * 60 * 1000;
+
+// Inactivity timeout: 30 minutes in milliseconds
+export const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
+
+// Activity update throttle: 1 minute (don't update more frequently than this)
+export const ACTIVITY_UPDATE_THROTTLE = 60 * 1000;
+
+/**
+ * Check if a session is valid (not expired and not inactive)
+ * @returns {Object} { valid: boolean, reason: string }
+ */
+export const isSessionValid = () => {
+    const sessionCreated = localStorage.getItem('session_created');
+    const lastActivity = localStorage.getItem('last_activity');
+
+    if (!sessionCreated || !lastActivity) {
+        return { valid: false, reason: 'no_session' };
+    }
+
+    const now = Date.now();
+    const createdTime = parseInt(sessionCreated, 10);
+    const activityTime = parseInt(lastActivity, 10);
+
+    // Check if session has expired (24 hours since creation)
+    if (now - createdTime > SESSION_DURATION) {
+        return { valid: false, reason: 'session_expired' };
+    }
+
+    // Check if session is inactive (30 minutes since last activity)
+    if (now - activityTime > INACTIVITY_TIMEOUT) {
+        return { valid: false, reason: 'inactivity_timeout' };
+    }
+
+    return { valid: true, reason: 'active' };
+};
+
+/**
+ * Update the last activity timestamp
+ * Uses throttling to avoid excessive localStorage writes
+ */
+export const updateActivity = () => {
+    const lastActivity = localStorage.getItem('last_activity');
+    const now = Date.now();
+
+    // Throttle updates - only update if more than 1 minute has passed
+    if (lastActivity) {
+        const lastActivityTime = parseInt(lastActivity, 10);
+        if (now - lastActivityTime < ACTIVITY_UPDATE_THROTTLE) {
+            return; // Skip update
+        }
+    }
+
+    localStorage.setItem('last_activity', now.toString());
+};
+
+/**
+ * Get time remaining until session expires
+ * @returns {number} Milliseconds until expiration, or 0 if expired
+ */
+export const getSessionTimeRemaining = () => {
+    const sessionCreated = localStorage.getItem('session_created');
+    if (!sessionCreated) return 0;
+
+    const now = Date.now();
+    const createdTime = parseInt(sessionCreated, 10);
+    const remaining = SESSION_DURATION - (now - createdTime);
+
+    return Math.max(0, remaining);
+};
+
+/**
+ * Get time remaining until inactivity timeout
+ * @returns {number} Milliseconds until timeout, or 0 if timed out
+ */
+export const getInactivityTimeRemaining = () => {
+    const lastActivity = localStorage.getItem('last_activity');
+    if (!lastActivity) return 0;
+
+    const now = Date.now();
+    const activityTime = parseInt(lastActivity, 10);
+    const remaining = INACTIVITY_TIMEOUT - (now - activityTime);
+
+    return Math.max(0, remaining);
+};
+
+/**
+ * Clear all session data
+ */
+export const clearSessionData = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('session_created');
+    localStorage.removeItem('last_activity');
+};
+
+/**
+ * Initialize session timestamps
+ */
+export const initializeSession = () => {
+    const now = Date.now().toString();
+    localStorage.setItem('session_created', now);
+    localStorage.setItem('last_activity', now);
+};

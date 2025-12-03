@@ -213,6 +213,16 @@ const ResearchDetail = () => {
               </Button>
             )}
 
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={handleShare}
+              className="me-2"
+            >
+              <FontAwesomeIcon icon={faShare} className="me-1" />
+              Share
+            </Button>
+
             {isAuthenticated && (
               <Button
                 variant={bookmarked ? "warning" : "outline-warning"}
@@ -225,16 +235,6 @@ const ResearchDetail = () => {
                 {bookmarking ? '...' : (bookmarked ? 'Bookmarked' : 'Bookmark')}
               </Button>
             )}
-
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={handleShare}
-              className="me-2"
-            >
-              <FontAwesomeIcon icon={faShare} className="me-1" />
-              Share
-            </Button>
 
             {currentResearch.file_url && (
               <Button
