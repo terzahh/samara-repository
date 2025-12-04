@@ -4,6 +4,9 @@
  * This file maintains backward compatibility with existing code
  */
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+console.log('🔧 API_URL configured as:', API_URL || 'Using relative paths (proxy)');
+
 /**
  * Login user with email and password
  * @param {string} email - User email
@@ -12,7 +15,7 @@
  */
 export const loginUser = async (email, password) => {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,7 +48,7 @@ export const loginUser = async (email, password) => {
  */
 export const registerUser = async (email, password, displayName, role = 'user', departmentId = null) => {
   try {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -78,7 +81,7 @@ export const logoutUser = async () => {
       .find(row => row.startsWith('csrf_token='))
       ?.split('=')[1];
 
-    await fetch('/api/auth/logout', {
+    await fetch(`${API_URL}/api/auth/logout`, {
       method: 'POST',
       headers: {
         'X-CSRF-Token': csrfToken || ''
@@ -97,7 +100,7 @@ export const logoutUser = async () => {
  */
 export const getCurrentUser = async () => {
   try {
-    const response = await fetch('/api/auth/me', {
+    const response = await fetch(`${API_URL}/api/auth/me`, {
       credentials: 'include'
     });
 
@@ -217,7 +220,7 @@ export const adminResetUserPassword = async (userId, newPassword) => {
       .find(row => row.startsWith('csrf_token='))
       ?.split('=')[1];
 
-    const response = await fetch('/api/auth/admin/reset-password', {
+    const response = await fetch(`${API_URL}/api/auth/admin/reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
