@@ -13,7 +13,7 @@ function setAuthCookies(res, { sessionId, refreshToken, csrfToken }) {
     const cookieOptions = {
         httpOnly: true,
         secure: isProduction, // HTTPS only in production
-        sameSite: 'strict',
+        sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-origin in production
         path: '/',
         domain: domain || undefined
     };
@@ -34,7 +34,7 @@ function setAuthCookies(res, { sessionId, refreshToken, csrfToken }) {
     res.cookie('csrf_token', csrfToken, {
         httpOnly: false, // Client must read this
         secure: isProduction,
-        sameSite: 'strict',
+        sameSite: isProduction ? 'none' : 'lax',
         path: '/',
         maxAge: 24 * 60 * 60 * 1000,
         domain: domain || undefined
@@ -51,7 +51,7 @@ function clearAuthCookies(res) {
     const cookieOptions = {
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'strict',
+        sameSite: isProduction ? 'none' : 'lax',
         path: '/'
     };
 
