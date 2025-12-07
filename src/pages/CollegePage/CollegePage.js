@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAward,
   faBook,
-  faGraduationCap,
+  faBookOpen,
   faEnvelope,
   faPhone,
   faMapMarkerAlt,
@@ -207,7 +207,7 @@ const CollegePage = () => {
             </Col>
             <Col md={4} className="text-center">
               <div className="hero-icon-box">
-                <FontAwesomeIcon icon={faGraduationCap} size="4x" style={{ color: '#fff', opacity: 0.3 }} />
+                <FontAwesomeIcon icon={faBookOpen} size="4x" style={{ color: '#fff', opacity: 0.3 }} />
               </div>
             </Col>
           </Row>

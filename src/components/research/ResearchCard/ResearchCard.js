@@ -116,7 +116,6 @@ const ResearchCard = ({ research }) => {
             to={`/research/${research.id}`}
             variant="outline-primary"
             size="sm"
-            className="me-2"
             disabled={downloading}
           >
             <FontAwesomeIcon icon={faEye} className="me-1" />

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col, Card, Accordion, Badge, Form, InputGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faBuilding, 
+import {
+  faBuilding,
   faGraduationCap,
   faEnvelope,
   faPhone
@@ -32,12 +32,11 @@ const CollegesDepartmentsPage = () => {
 
   // Alias map from displayed labels → actual DB department names
   const displayToDbAlias = useMemo(() => ({
-    'electrical & computer engineering': 'electrical engineering',
-    'electrical and computer engineering': 'electrical engineering',
     'construction technology management': 'construction technology management', // keep same if exists
     'water resource & irrigation engineering': 'water resource & irrigation engineering',
     'water resource and irrigation engineering': 'water resource & irrigation engineering',
   }), []);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -66,7 +65,7 @@ const CollegesDepartmentsPage = () => {
           }
         }
         setResearchCounts(counts);
-        
+
         console.log('Research counts by department ID:', counts);
       } catch (error) {
         console.error('Error loading departments:', error);
@@ -101,7 +100,7 @@ const CollegesDepartmentsPage = () => {
   const getResearchCount = (deptName) => {
     const dept = findDepartmentByName(deptName);
     const count = dept ? (researchCounts[dept.id] || 0) : 0;
-    
+
     // Debug logging for first few calls
     if (!getResearchCount.logged && getResearchCount.callCount < 5) {
       console.log(`getResearchCount("${deptName}") -> ${count} (dept: ${dept ? dept.name : 'not found'})`);
@@ -110,7 +109,7 @@ const CollegesDepartmentsPage = () => {
         getResearchCount.logged = true;
       }
     }
-    
+
     return count;
   };
 
@@ -205,7 +204,7 @@ const CollegesDepartmentsPage = () => {
                                     <p className="research-count mb-2">
                                       <Badge bg="primary">{count} Research Items</Badge>
                                     </p>
-                                    <Link 
+                                    <Link
                                       to={`/browse?department=${deptData.id}`}
                                       className="btn btn-sm btn-outline-primary"
                                     >
@@ -235,18 +234,18 @@ const CollegesDepartmentsPage = () => {
             <Accordion activeKey={expandedCollege?.toString()} className="colleges-accordion">
               {colleges.map((college) => (
                 <Accordion.Item eventKey={college.id.toString()} key={college.id}>
-                    <Accordion.Header onClick={() => toggleCollege(college.id)}>
+                  <Accordion.Header onClick={() => toggleCollege(college.id)}>
                     <div className="college-header">
-                        <h3 className="college-name">{college.name}</h3>
+                      <h3 className="college-name">{college.name}</h3>
                       {college.contact && (
                         <Badge bg="info" className="ms-2">Contact Info Available</Badge>
                       )}
                     </div>
                   </Accordion.Header>
-                    <Accordion.Body>
-                      <div className="mb-2">
-                        <Link to={`/colleges/${college.id}`} className="btn btn-sm btn-outline-primary me-2">Open College Page</Link>
-                      </div>
+                  <Accordion.Body>
+                    <div className="mb-2">
+                      <Link to={`/colleges/${college.id}`} className="btn btn-sm btn-outline-primary me-2">Open College Page</Link>
+                    </div>
                     {/* Visit college website button */}
                     {college.website && (
                       <div className="mb-3">
@@ -306,38 +305,38 @@ const CollegesDepartmentsPage = () => {
                           {college.departments
                             .filter(dept => departmentMatchesSearch(dept.name))
                             .map((dept, index) => {
-                            const deptData = findDepartmentByName(dept.name);
-                            const count = getResearchCount(dept.name);
-                            
-                            return (
-                              <Col md={6} lg={4} key={index} className="mb-3">
-                                <Card className="department-card h-100">
-                                  <Card.Body>
-                                    <Card.Title as="h5" className="department-name">
-                                      {dept.name}
-                                    </Card.Title>
-                                    {deptData ? (
-                                      <>
-                                        <p className="research-count mb-2">
-                                          <Badge bg="primary">{count} Research Items</Badge>
+                              const deptData = findDepartmentByName(dept.name);
+                              const count = getResearchCount(dept.name);
+
+                              return (
+                                <Col md={6} lg={4} key={index} className="mb-3">
+                                  <Card className="department-card h-100">
+                                    <Card.Body>
+                                      <Card.Title as="h5" className="department-name">
+                                        {dept.name}
+                                      </Card.Title>
+                                      {deptData ? (
+                                        <>
+                                          <p className="research-count mb-2">
+                                            <Badge bg="primary">{count} Research Items</Badge>
+                                          </p>
+                                          <Link
+                                            to={`/browse?department=${deptData.id}`}
+                                            className="btn btn-sm btn-outline-primary"
+                                          >
+                                            View Research
+                                          </Link>
+                                        </>
+                                      ) : (
+                                        <p className="text-muted small mb-0">
+                                          No research available yet
                                         </p>
-                                        <Link 
-                                          to={`/browse?department=${deptData.id}`}
-                                          className="btn btn-sm btn-outline-primary"
-                                        >
-                                          View Research
-                                        </Link>
-                                      </>
-                                    ) : (
-                                      <p className="text-muted small mb-0">
-                                        No research available yet
-                                      </p>
-                                    )}
-                                  </Card.Body>
-                                </Card>
-                              </Col>
-                            );
-                          })}
+                                      )}
+                                    </Card.Body>
+                                  </Card>
+                                </Col>
+                              );
+                            })}
                         </Row>
                       </div>
                     )}

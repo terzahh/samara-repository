@@ -5,6 +5,10 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   position: relative;
   overflow: hidden;
+  min-width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .research-card:hover {
@@ -69,10 +73,18 @@
   opacity: 0.22;
 }
 
+.research-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 .research-card .card-footer {
   background-color: transparent;
   border-top: none;
-  padding: 12px 16px 16px 16px;
+  padding: 12px 16px;
+  margin-top: auto;
+  box-sizing: border-box;
 }
 
 .research-actions {
@@ -80,10 +92,21 @@
   gap: 8px;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: flex-end;
+  width: auto;
+  box-sizing: border-box;
 }
 
 .research-actions .btn {
-  padding: 6px 12px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  min-width: fit-content;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .research-actions .btn {
@@ -92,11 +115,13 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   font-weight: 600;
   border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  gap: 6px;
   z-index: 0;
-  padding: 6px 10px;
+}
+
+.research-actions .btn svg {
+  vertical-align: middle;
+  margin-top: -1px;
 }
 
 /* View Button (outline-primary) */

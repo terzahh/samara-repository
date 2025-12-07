@@ -45,7 +45,7 @@ const RATE_LIMIT_MAX_REFRESH = parseInt(
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
 // Server configuration
-const PORT = parseInt(process.env.PORT || '5000', 10);
+const PORT = parseInt(process.env.PORT || '10000', 10);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 module.exports = {

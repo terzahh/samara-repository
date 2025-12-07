@@ -138,3 +138,45 @@
         font-size: 34px !important;
     }
 }
+
+/* Highlights Section Equal Height Fix - Using CSS Grid */
+.highlights-section .row {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+    align-items: stretch !important;
+}
+
+.highlights-section .row>[class*='col-'] {
+    display: contents !important;
+}
+
+.highlights-card {
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr !important;
+}
+
+.highlights-card .card-header {
+    grid-row: 1 !important;
+}
+
+.highlights-card .card-body {
+    grid-row: 2 !important;
+    display: grid !important;
+    grid-template-rows: 1fr auto !important;
+}
+
+.highlights-card .card-body .list-unstyled {
+    grid-row: 1 !important;
+}
+
+.highlights-card .card-body .mt-3 {
+    grid-row: 2 !important;
+}
+
+@media (max-width: 768px) {
+    .highlights-section .row {
+        grid-template-columns: 1fr !important;
+    }
+}
