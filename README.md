@@ -1,70 +1,146 @@
-# Getting Started with Create React App
+# Samara Repository
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Full-stack application for managing academic repository with React frontend, Express backend, and Supabase database.
 
-## Available Scripts
+## Project Structure
 
-In the project directory, you can run:
+This project is organized into two independent folders:
 
-### `npm start`
+```
+samara-repository/
+├── frontend/        # React application
+├── backend/         # Express server
+├── setup.bat        # Windows setup script
+└── README.md        # This file
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Quick Start
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Option 1: Automated Setup (Windows)
 
-### `npm test`
+Run the setup script to install dependencies and create environment files:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+setup.bat
+```
 
-### `npm run build`
+### Option 2: Manual Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**1. Setup Frontend:**
+```bash
+cd frontend
+npm install
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**2. Setup Backend:**
+```bash
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Running the Application
 
-### `npm run eject`
+You need to run both frontend and backend in separate terminals:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run dev
+```
+Server runs on http://localhost:5000
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm start
+```
+React app runs on http://localhost:3000
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Environment Configuration
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Frontend (.env)
+- `REACT_APP_API_URL` - Backend API URL (default: http://localhost:5000)
+- `REACT_APP_SUPABASE_URL` - Your Supabase project URL
+- `REACT_APP_SUPABASE_ANON_KEY` - Your Supabase anonymous key
 
-## Learn More
+### Backend (.env)
+- `PORT` - Server port (default: 5000)
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key
+- `COOKIE_SECRET` - Random 64-character hex string
+- `CSRF_SECRET` - Random 64-character hex string
+- `CLIENT_URL` - Frontend URL (default: http://localhost:3000)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Generate secrets:**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Documentation
 
-### Code Splitting
+- [Frontend README](./frontend/README.md) - Frontend setup and development
+- [Backend README](./backend/README.md) - Backend setup and API documentation
+- [Backend API Reference](./backend/API_REFERENCE.md) - Detailed API documentation
+- [Backend Setup Guide](./backend/SETUP_GUIDE.md) - Backend configuration guide
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Technology Stack
 
-### Analyzing the Bundle Size
+**Frontend:**
+- React 19.2.0
+- React Router
+- React Bootstrap
+- Supabase Client
+- FontAwesome Icons
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**Backend:**
+- Express 5.2.1
+- Supabase (Service Role)
+- bcrypt for password hashing
+- helmet for security
+- CORS for cross-origin requests
+- express-rate-limit for rate limiting
 
-### Making a Progressive Web App
+**Database:**
+- Supabase (PostgreSQL)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Development Workflow
 
-### Advanced Configuration
+1. Make sure backend is running first
+2. Start frontend development server
+3. Frontend will proxy API requests to backend
+4. Both support hot-reloading during development
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Deployment
 
-### Deployment
+**Frontend:**
+- Build: `npm run build` (in frontend/)
+- Deploy to: Vercel, Netlify, or any static hosting
+- Set environment variables in hosting platform
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Backend:**
+- Deploy to: Render, Railway, Heroku, or any Node.js hosting
+- Set environment variables in hosting platform
+- Update `CLIENT_URL` to production frontend URL
 
-### `npm run build` fails to minify
+## Security Best Practices
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+✅ **DO:**
+- Keep `.env` files out of version control
+- Use service role key only on backend
+- Configure CORS properly
+- Use httpOnly cookies for authentication
+- Keep dependencies updated
+
+❌ **DON'T:**
+- Expose service role keys to frontend
+- Store sensitive tokens in localStorage
+- Commit `.env` files
+- Use same secrets in development and production
+
+## License
+
+See LICENSE file for details.

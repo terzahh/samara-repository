@@ -1,0 +1,28 @@
+{
+    "name": "samara-repository-backend",
+    "version": "0.1.0",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+        "@supabase/supabase-js": "^2.76.1",
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "crypto-js": "^4.2.0",
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.2.1",
+        "helmet": "^8.1.0",
+        "pdf-parse": "^2.4.5",
+        "string-similarity": "^4.0.4",
+        "uuid": "^13.0.0"
+    },
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.11"
+    }
+}
