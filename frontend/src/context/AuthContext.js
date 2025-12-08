@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
 
+// Backend API URL from environment variable
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const AuthContext = createContext();
 
 const authReducer = (state, action) => {
@@ -42,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
           credentials: 'include' // Send cookies
         });
 
@@ -111,9 +114,9 @@ export const AuthProvider = ({ children }) => {
     // Ping server every 5 minutes to keep session active
     const pingServer = () => {
       if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/auth/ping');
+        navigator.sendBeacon(`${API_URL}/api/auth/ping`);
       } else {
-        fetch('/api/auth/ping', {
+        fetch(`${API_URL}/api/auth/ping`, {
           method: 'POST',
           credentials: 'include',
           keepalive: true
@@ -159,7 +162,7 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = useCallback(async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -201,7 +204,7 @@ export const AuthProvider = ({ children }) => {
         .find(row => row.startsWith('csrf_token='))
         ?.split('=')[1];
 
-      await fetch('/api/auth/logout', {
+      await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         headers: {
           'X-CSRF-Token': csrfToken || ''
@@ -227,7 +230,7 @@ export const AuthProvider = ({ children }) => {
   // Refresh auth state
   const refreshAuth = useCallback(async () => {
     try {
-      const response = await fetch('/api/auth/me', {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         credentials: 'include'
       });
 

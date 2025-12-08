@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -83,7 +83,7 @@ async function addECEResearch() {
 
         // Verify the records were added
         console.log('🔍 Verifying records were added...\n');
-        
+
         const { data: verifyRecords, error: verifyError } = await supabase
             .from('research')
             .select('id, title, access_level, type')

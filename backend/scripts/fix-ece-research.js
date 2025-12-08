@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -30,7 +30,7 @@ async function fixECEResearch() {
         // Find or create ECE department
         if (eceDepts.length === 0) {
             console.log('❌ Electrical & Computer Engineering department not found. Creating...');
-            
+
             const { data: newDept, error: insertError } = await supabase
                 .from('departments')
                 .insert({ name: 'Electrical & Computer Engineering' })
@@ -38,7 +38,7 @@ async function fixECEResearch() {
                 .single();
 
             if (insertError) throw insertError;
-            
+
             eceDeptId = newDept.id;
             console.log(`✅ Created department: ${newDept.name} (ID: ${eceDeptId})`);
         } else {
@@ -58,13 +58,13 @@ async function fixECEResearch() {
 
         if (existingResearch.length >= 2) {
             console.log('✅ Department already has research records. Checking access levels...');
-            
+
             const publicCount = existingResearch.filter(r => r.access_level === 'public').length;
             const restrictedCount = existingResearch.filter(r => r.access_level === 'restricted').length;
-            
+
             console.log(`   - Public: ${publicCount}`);
             console.log(`   - Restricted: ${restrictedCount}`);
-            
+
             if (publicCount >= 1 && restrictedCount >= 1) {
                 console.log('✅ Both public and restricted research exist. Issue might be elsewhere.');
                 return;

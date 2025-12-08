@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -45,7 +45,7 @@ async function addSampleFiles() {
         // Update each record
         for (const research of eceResearch) {
             const fileData = fileUpdates.find(f => research.title.includes(f.title.split(' ')[0]));
-            
+
             if (fileData) {
                 const { error: updateError } = await supabase
                     .from('research')
@@ -68,7 +68,7 @@ async function addSampleFiles() {
 
         // Verify the updates
         console.log('🔍 Verifying updates...\n');
-        
+
         const { data: updatedResearch, error: verifyError } = await supabase
             .from('research')
             .select('id, title, file_url, file_name, access_level')

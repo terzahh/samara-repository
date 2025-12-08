@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -88,9 +88,9 @@ async function testDepartmentFiltering() {
 
         // Test 2: Filter by ECE department + public access
         console.log('\nTest 2: Filter by ECE department + public access');
-        const result2 = await getAllResearch(1, 10, { 
-            department: eceDept.id, 
-            accessLevel: 'public' 
+        const result2 = await getAllResearch(1, 10, {
+            department: eceDept.id,
+            accessLevel: 'public'
         });
         console.log(`✅ Found ${result2.totalCount} public records`);
         result2.research.forEach(r => {
@@ -99,9 +99,9 @@ async function testDepartmentFiltering() {
 
         // Test 3: Filter by ECE department + restricted access
         console.log('\nTest 3: Filter by ECE department + restricted access');
-        const result3 = await getAllResearch(1, 10, { 
-            department: eceDept.id, 
-            accessLevel: 'restricted' 
+        const result3 = await getAllResearch(1, 10, {
+            department: eceDept.id,
+            accessLevel: 'restricted'
         });
         console.log(`✅ Found ${result3.totalCount} restricted records`);
         result3.research.forEach(r => {

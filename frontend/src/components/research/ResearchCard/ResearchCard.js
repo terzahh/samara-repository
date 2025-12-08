@@ -105,7 +105,7 @@ const ResearchCard = ({ research }) => {
         </div>
       </Card.Body>
 
-      <Card.Footer className="d-flex justify-content-between align-items-center">
+      <Card.Footer>
         <small className="text-muted">
           {formatDate(research.created_at)}
         </small>

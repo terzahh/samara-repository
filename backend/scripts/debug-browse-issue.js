@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -31,7 +31,7 @@ async function debugBrowseIssue() {
         // 2. For each ECE department, check research
         for (const dept of eceDepts) {
             console.log(`\n📊 Research for "${dept.name}" (ID: ${dept.id}):`);
-            
+
             const { data: research, error: resError } = await supabase
                 .from('research')
                 .select('id, title, author, access_level, type, year')
@@ -50,11 +50,11 @@ async function debugBrowseIssue() {
 
         // 3. Test the exact query that the frontend uses
         console.log('\n🧪 Testing frontend query simulation...');
-        
+
         const testDeptId = eceDepts.find(d => d.name === 'Electrical & Computer Engineering')?.id;
         if (testDeptId) {
             console.log(`Testing with department ID: ${testDeptId}`);
-            
+
             // Simulate getAllResearch function
             let query = supabase
                 .from('research')
@@ -83,7 +83,7 @@ async function debugBrowseIssue() {
             } else {
                 console.log(`✅ Query successful: Found ${count} total records`);
                 console.log(`   Returned ${data.length} records for page ${page}`);
-                
+
                 if (data.length > 0) {
                     data.forEach(r => {
                         console.log(`   - ${r.title} (${r.access_level})`);
@@ -96,7 +96,7 @@ async function debugBrowseIssue() {
 
         // 4. Check if there are any RLS policies blocking access
         console.log('\n🔒 Checking for potential RLS issues...');
-        
+
         // Try with different access levels
         const { data: publicResearch } = await supabase
             .from('research')
