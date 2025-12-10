@@ -1,4 +1,5 @@
 import { supabase, supabaseForCustomAuth } from './supabase';
+import { apiClient } from '../services/api';
 
 // Research operations
 export const addResearch = async (researchData) => {
@@ -971,5 +972,38 @@ export const getSimilarResearch = async (textContent, threshold = 0.80) => {
   } catch (error) {
     console.error('Error in getSimilarResearch:', error);
     return [];
+  }
+};
+
+// Rating operations
+// Rating operations
+export const addRating = async (userId, researchId, rating) => {
+  try {
+    const data = await apiClient.post(`/api/research/${researchId}/rate`, { rating });
+    return data.rating;
+  } catch (error) {
+    if (error.message && error.message.includes('Rating feature not fully deployed')) {
+      throw new Error('Ratings table missing. Please admins run the migration script.');
+    }
+    throw error;
+  }
+};
+
+export const getFileRatings = async (researchId) => {
+  try {
+    const data = await apiClient.get(`/api/research/${researchId}/ratings`);
+    return data;
+  } catch (error) {
+    // Graceful fallback
+    return { total: 0, average: 0 };
+  }
+};
+
+export const getUserRating = async (userId, researchId) => {
+  try {
+    const data = await apiClient.get(`/api/research/${researchId}/user-rating`);
+    return data.rating;
+  } catch (error) {
+    return 0;
   }
 };

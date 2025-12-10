@@ -6,6 +6,7 @@ import {
 } from '../supabase/database';
 import { uploadFile, updateFile, deleteFile, createSignedUrl } from '../supabase/storage';
 import { supabase } from '../supabase/supabase';
+import { apiClient } from './api';
 
 // Import duplicate detection but make it optional
 let checkForDuplicates = null;
@@ -208,15 +209,12 @@ export const createComment = async (researchId, commentData) => {
 
 export const getDownloadUrl = async (research) => {
   try {
-    if (research.access_level === 'public') {
-      // For public files, return the public URL
-      const { data } = supabase.storage.from('research-files').getPublicUrl(research.file_path);
-      return data.publicUrl;
-    } else {
-      // For restricted files, create a new signed URL
-      return await createSignedUrl(research.file_path, 3600); // 1 hour expiry
-    }
+    // ALWAYS get the signed URL from the backend.
+    // This handles both "Restricted" files (auth check) AND "Public" files (private bucket issue).
+    const response = await apiClient.get(`/api/research/${research.id}/download-url`);
+    return response.url;
   } catch (error) {
+    console.error('Error getting download URL:', error);
     throw error;
   }
 };

@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom';
 import { formatDate, truncateText, getResearchTypeLabel } from '../../../utils/helpers';
 import { ACCESS_LEVELS } from '../../../utils/constants';
 import { getDownloadUrl } from '../../../services/researchService';
+import { useAuth } from '../../../hooks/useAuth';
 import './ResearchCard.css';
 
 const ResearchCard = ({ research }) => {
+  const { isAuthenticated } = useAuth();
   const [downloading, setDownloading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -123,15 +125,17 @@ const ResearchCard = ({ research }) => {
           </Button>
 
           {research.file_url && (
-            <Button
-              variant="outline-success"
-              size="sm"
-              onClick={handleDownload}
-              disabled={downloading}
-            >
-              <FontAwesomeIcon icon={faDownload} className="me-1" />
-              {downloading ? 'Downloading...' : 'Download'}
-            </Button>
+            (research.access_level === 'public' || (research.access_level === 'restricted' && isAuthenticated)) && (
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={handleDownload}
+                disabled={downloading}
+              >
+                <FontAwesomeIcon icon={faDownload} className="me-1" />
+                {downloading ? 'Downloading...' : 'Download'}
+              </Button>
+            )
           )}
         </div>
       </Card.Footer>

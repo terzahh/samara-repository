@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Badge, Button, Alert, Row, Col, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faComment, faShare, faBookmark, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faComment, faShare, faBookmark, faTrash, faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useResearch } from '../../../hooks/useResearch';
 import { useAuth } from '../../../hooks/useAuth';
 import { formatDate, getResearchTypeLabel, truncateText } from '../../../utils/helpers';
 import { ACCESS_LEVELS, ROLES } from '../../../utils/constants';
 import { getDownloadUrl, removeResearch } from '../../../services/researchService';
-import { trackDownload, addBookmark, removeBookmark, isBookmarked, incrementResearchViewCount } from '../../../supabase/database';
+import { trackDownload, addBookmark, removeBookmark, isBookmarked, incrementResearchViewCount, addRating, getFileRatings, getUserRating } from '../../../supabase/database';
 import CommentSection from '../CommentSection/CommentSection';
 import Loading from '../../common/Loading/Loading';
+import RatingSection from '../Rating/RatingSection';
+import FileViewerModal from '../PDFViewer/FileViewerModal';
 import './ResearchDetail.css';
 
 const ResearchDetail = () => {
@@ -27,6 +29,15 @@ const ResearchDetail = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Rating state
+  const [userRating, setUserRating] = useState(0);
+  const [ratingStats, setRatingStats] = useState({ average: 0, total: 0 });
+  const [isRating, setIsRating] = useState(false);
+
+  // PDF Viewer state
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
   useEffect(() => {
     if (id) {
       fetchResearchById(id)
@@ -35,16 +46,26 @@ const ResearchDetail = () => {
           console.error('Error fetching research:', error);
           setError('Failed to load research. Please try again.');
         });
+
+      // Fetch ratings
+      getFileRatings(id)
+        .then(setRatingStats)
+        .catch(err => console.error('Error fetching ratings:', err));
+
       // Don't fetch comments here - let CommentSection fetch when it mounts
     }
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // Check if research is bookmarked
+    // Check if research is bookmarked and fetch user rating
     if (id && isAuthenticated && user?.id) {
       isBookmarked(user.id, id)
         .then(setBookmarked)
         .catch(() => setBookmarked(false));
+
+      getUserRating(user.id, id)
+        .then(setUserRating)
+        .catch(() => setUserRating(0));
     }
   }, [id, isAuthenticated, user?.id]);
 
@@ -167,6 +188,51 @@ const ResearchDetail = () => {
     }
   };
 
+  const handleRate = async (rating) => {
+    if (!isAuthenticated || !user?.id) return;
+
+    setIsRating(true);
+    try {
+      await addRating(user.id, currentResearch.id, rating);
+      setUserRating(rating);
+      // Refresh stats
+      const stats = await getFileRatings(currentResearch.id);
+      setRatingStats(stats);
+    } catch (error) {
+      console.error('Error rating:', error);
+      alert(`Failed to submit rating: ${error.message || 'Unknown error'}`);
+    } finally {
+      setIsRating(false);
+    }
+  };
+
+  const handleReadOnline = async () => {
+    if (!currentResearch.file_url) return;
+
+    // We now support multiple formats (PDF, DOCX, Images)
+    // The FileViewerModal checks the type and renders accordingly.
+
+    // Simple check for supported extensions to prevent opening things like .exe or .zip
+    const supportedExtensions = ['.pdf', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.txt', '.pptx', '.ppt'];
+    const fileName = currentResearch.file_name?.toLowerCase();
+    const isSupported = supportedExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!isSupported) {
+      alert('Preview not available for this file type. Please download to view.');
+      return;
+    }
+
+    try {
+      const url = await getDownloadUrl(currentResearch);
+      console.log('PDF URL generated (Backend):', url); // Debugging
+      setPdfUrl(url);
+      setShowPdfViewer(true);
+    } catch (e) {
+      console.error('Error loading document:', e);
+      alert('Failed to load document for online reading.');
+    }
+  };
+
   if (loading) {
     return <Loading message="Loading research details..." />;
   }
@@ -179,13 +245,8 @@ const ResearchDetail = () => {
     );
   }
 
-  if (!canAccess()) {
-    return (
-      <Alert variant="warning">
-        This research is restricted. Please <a href="/login">log in</a> to access it.
-      </Alert>
-    );
-  }
+  // ALLOW rendering even if restricted (removed the blocking check)
+  // We will handle restriction in the UI (hide download, blur viewer)
 
   return (
     <div className="research-detail">
@@ -237,15 +298,39 @@ const ResearchDetail = () => {
             )}
 
             {currentResearch.file_url && (
-              <Button
-                variant="outline-success"
-                size="sm"
-                onClick={handleDownload}
-                disabled={downloading}
-              >
-                <FontAwesomeIcon icon={faDownload} className="me-1" />
-                {downloading ? 'Downloading...' : 'Download'}
-              </Button>
+              <>
+                {/* Show read online for supported formats */}
+                {(() => {
+                  const supportedExtensions = ['.pdf', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.txt', '.pptx', '.ppt'];
+                  const fileName = currentResearch.file_name?.toLowerCase();
+                  const isSupported = supportedExtensions.some(ext => fileName.endsWith(ext));
+
+                  return isSupported && (
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={handleReadOnline}
+                      className="me-2"
+                    >
+                      <FontAwesomeIcon icon={faBookOpen} className="me-1" />
+                      Read Online
+                    </Button>
+                  );
+                })()}
+
+                {/* Hide download button if restricted */}
+                {canAccess() && (
+                  <Button
+                    variant="outline-success"
+                    size="sm"
+                    onClick={handleDownload}
+                    disabled={downloading}
+                  >
+                    <FontAwesomeIcon icon={faDownload} className="me-1" />
+                    {downloading ? 'Downloading...' : 'Download'}
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </Card.Header>
@@ -258,6 +343,15 @@ const ResearchDetail = () => {
           <Card.Subtitle className="mb-3 research-author">
             By {currentResearch.author}
           </Card.Subtitle>
+
+          <RatingSection
+            userRating={userRating}
+            averageRating={ratingStats.average}
+            totalRatings={ratingStats.total}
+            onRate={handleRate}
+            isAuthenticated={isAuthenticated}
+            isRating={isRating}
+          />
 
           <Row className="research-meta mb-4">
             <Col md={6}>
@@ -354,7 +448,17 @@ const ResearchDetail = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+
+      {/* File Viewer Modal */}
+      <FileViewerModal
+        show={showPdfViewer}
+        onHide={() => setShowPdfViewer(false)}
+        fileUrl={pdfUrl}
+        fileName={currentResearch?.file_name}
+        title={currentResearch?.title}
+        isRestricted={!canAccess()}
+      />
+    </div >
   );
 };
 
