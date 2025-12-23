@@ -1,0 +1,36 @@
+.rating-section {
+    padding: 10px 0;
+}
+
+.rating-star {
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+    margin-right: 4px;
+}
+
+.rating-star.filled {
+    color: #ffc107;
+    /* Bootstrap warning color */
+}
+
+.rating-star.interactive {
+    cursor: pointer;
+}
+
+.rating-star.interactive:hover {
+    transform: scale(1.1);
+}
+
+.rating-star.disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.rating-summary {
+    margin-top: 5px;
+}
+
+.rating-status {
+    font-size: 0.9rem;
+}

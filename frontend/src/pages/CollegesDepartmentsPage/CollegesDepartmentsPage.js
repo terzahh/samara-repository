@@ -348,24 +348,6 @@ const CollegesDepartmentsPage = () => {
             </Accordion>
           </Col>
         </Row>
-
-        {/* Browse All Research */}
-        <Row className="mt-5">
-          <Col md={12}>
-            <Card className="browse-all-card text-center">
-              <Card.Body>
-                <h3 className="mb-3">Browse All Research</h3>
-                <p className="mb-4">
-                  Explore the complete collection of research papers, theses, and dissertations
-                </p>
-                <Link to="/browse" className="btn btn-primary btn-lg">
-                  Browse Research
-                  <FontAwesomeIcon icon={faGraduationCap} className="ms-2" />
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
       </Container>
     </div>
   );

@@ -50,7 +50,7 @@ router.post('/login', loginLimiter, async (req, res, next) => {
  */
 router.post('/register', registerLimiter, async (req, res, next) => {
     try {
-        const { email, password, displayName, role, departmentId } = req.body;
+        const { email, password, displayName, role, departmentId, pendingApproval } = req.body;
 
         if (!email || !password || !displayName) {
             return res.status(400).json({
@@ -63,7 +63,8 @@ router.post('/register', registerLimiter, async (req, res, next) => {
             password,
             displayName,
             role,
-            departmentId
+            departmentId,
+            pendingApproval
         );
 
         res.status(201).json({ user });

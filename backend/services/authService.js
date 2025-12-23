@@ -34,6 +34,7 @@ async function loginUser(email, password, userAgent, ipAddress) {
       display_name,
       role_id,
       department_id,
+      approved,
       roles(name),
       departments(name)
     `)
@@ -71,6 +72,21 @@ async function loginUser(email, password, userAgent, ipAddress) {
             { reason: 'invalid_password' }
         );
         throw new Error('Invalid credentials');
+    }
+
+    // Check if user is approved (for department heads)
+    if (user.approved === false) {
+        await logActivity(
+            user.id,
+            null,
+            'login_failed',
+            'warning',
+            ipAddress,
+            userAgent,
+            null,
+            { reason: 'pending_approval' }
+        );
+        throw new Error('Your account is pending admin approval. Please wait for approval before logging in.');
     }
 
     // Generate device signature
@@ -119,9 +135,10 @@ async function loginUser(email, password, userAgent, ipAddress) {
  * @param {string} displayName - Display name
  * @param {string} role - User role (default: 'user')
  * @param {string} departmentId - Department ID (optional)
+ * @param {boolean} pendingApproval - Whether user needs admin approval (default: false)
  * @returns {Promise<Object>} { user }
  */
-async function registerUser(email, password, displayName, role = 'user', departmentId = null) {
+async function registerUser(email, password, displayName, role = 'user', departmentId = null, pendingApproval = false) {
     // Normalize email
     const normalizedEmail = email.toLowerCase().trim();
 
@@ -184,7 +201,9 @@ async function registerUser(email, password, displayName, role = 'user', departm
         roleData = newRole;
     }
 
-    // Create user
+    // Create user with approved status
+    // If pendingApproval is true (department heads), set approved to false
+    // Otherwise, set approved to true (regular users)
     const { data: newUser, error: insertError } = await supabaseAdmin
         .from('users')
         .insert({
@@ -192,7 +211,8 @@ async function registerUser(email, password, displayName, role = 'user', departm
             password_hash: passwordHash,
             display_name: displayName,
             role_id: roleData.id,
-            department_id: departmentId
+            department_id: departmentId,
+            approved: !pendingApproval  // Set to false if pending approval, true otherwise
         })
         .select(`
       id,
@@ -200,6 +220,7 @@ async function registerUser(email, password, displayName, role = 'user', departm
       display_name,
       role_id,
       department_id,
+      approved,
       roles(name),
       departments(name)
     `)

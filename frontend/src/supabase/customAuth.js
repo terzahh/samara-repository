@@ -44,9 +44,10 @@ export const loginUser = async (email, password) => {
  * @param {string} displayName - Display name
  * @param {string} role - User role (optional)
  * @param {string} departmentId - Department ID (optional)
+ * @param {boolean} pendingApproval - Whether user needs approval (optional)
  * @returns {Promise<Object>} User object
  */
-export const registerUser = async (email, password, displayName, role = 'user', departmentId = null) => {
+export const registerUser = async (email, password, displayName, role = 'user', departmentId = null, pendingApproval = false) => {
   try {
     const response = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
@@ -54,7 +55,7 @@ export const registerUser = async (email, password, displayName, role = 'user', 
         'Content-Type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({ email, password, displayName, role, departmentId })
+      body: JSON.stringify({ email, password, displayName, role, departmentId, pendingApproval })
     });
 
     if (!response.ok) {

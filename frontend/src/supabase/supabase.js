@@ -26,7 +26,14 @@ const fetchWithTimeout = (resource, options = {}) => {
 // Using a single instance prevents conflicts
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
-    fetch: (url, opts) => fetchWithTimeout(url, { ...opts, timeout: 30000 })
+    fetch: (url, opts) => {
+      return fetchWithTimeout(url, { ...opts, timeout: 60000 }).catch(err => {
+        if (err.name === 'AbortError') {
+          console.error(`Supabase request timed out after 60s: ${url}`);
+        }
+        throw err;
+      });
+    }
   },
   auth: {
     persistSession: false, // Don't persist Supabase Auth sessions
