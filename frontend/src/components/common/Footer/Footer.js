@@ -46,7 +46,7 @@ const Footer = () => {
               <p>Samara University</p>
               <p>College of Engineering and Technology</p>
               <p>Department of Computer Science</p>
-              <p>Samara, Ethiopia</p>
+              <p>Samara, Afar, Ethiopia</p>
               <p className="mt-2">
                 <strong>Email:</strong> repository@su.edu.et
               </p>
