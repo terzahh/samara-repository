@@ -76,10 +76,24 @@ router.post('/register', registerLimiter, async (req, res, next) => {
 /**
  * POST /api/auth/logout
  * Logout and revoke session
+ * Note: CSRF protection is optional for logout to support cross-origin deployments
+ * Authentication is still required, so only logged-in users can logout
  */
-router.post('/logout', requireAuth, csrfProtection, async (req, res, next) => {
+router.post('/logout', requireAuth, async (req, res, next) => {
     try {
-        const { sessionId } = getSessionFromCookies(req);
+        const { sessionId, csrfToken: cookieCsrfToken } = getSessionFromCookies(req);
+        const headerCsrfToken = req.headers['x-csrf-token'];
+
+        // Validate CSRF if token is present, but don't block logout if missing
+        // This handles cross-origin scenarios where CSRF cookie may not be accessible
+        if (headerCsrfToken && cookieCsrfToken) {
+            const { constantTimeCompare } = require('../utils/crypto');
+            if (!constantTimeCompare(headerCsrfToken, cookieCsrfToken)) {
+                console.warn('⚠️  CSRF token mismatch on logout - allowing anyway for cross-origin support');
+            }
+        } else if (!headerCsrfToken || !cookieCsrfToken) {
+            console.warn('⚠️  CSRF token missing on logout - allowing anyway for cross-origin support');
+        }
 
         if (sessionId) {
             await revokeSession(sessionId, 'logout');

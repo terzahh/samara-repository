@@ -47,17 +47,33 @@ function setAuthCookies(res, { sessionId, refreshToken, csrfToken }) {
  */
 function clearAuthCookies(res) {
     const isProduction = process.env.NODE_ENV === 'production';
+    const domain = process.env.COOKIE_DOMAIN; // Must match the domain used when setting cookies
 
     const cookieOptions = {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
-        path: '/'
+        path: '/',
+        domain: domain || undefined
     };
 
+    // Clear cookies with the same options they were set with
     res.clearCookie('session_id', cookieOptions);
     res.clearCookie('refresh_token', cookieOptions);
     res.clearCookie('csrf_token', { ...cookieOptions, httpOnly: false });
+
+    // Also try clearing without domain for compatibility
+    if (domain) {
+        const noDomainOptions = {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            path: '/'
+        };
+        res.clearCookie('session_id', noDomainOptions);
+        res.clearCookie('refresh_token', noDomainOptions);
+        res.clearCookie('csrf_token', { ...noDomainOptions, httpOnly: false });
+    }
 }
 
 /**

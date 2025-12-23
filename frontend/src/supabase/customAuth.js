@@ -76,21 +76,26 @@ export const registerUser = async (email, password, displayName, role = 'user', 
  */
 export const logoutUser = async () => {
   try {
-    // Get CSRF token from cookie
+    // Get CSRF token from cookie (optional for cross-origin)
     const csrfToken = document.cookie
       .split('; ')
       .find(row => row.startsWith('csrf_token='))
       ?.split('=')[1];
 
-    await fetch(`${API_URL}/api/auth/logout`, {
+    const response = await fetch(`${API_URL}/api/auth/logout`, {
       method: 'POST',
       headers: {
-        'X-CSRF-Token': csrfToken || ''
+        'X-CSRF-Token': csrfToken || '' // Send token if available
       },
       credentials: 'include'
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.warn('⚠️  Backend logout failed:', errorData);
+    }
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('❌ Logout error:', error);
     // Don't throw - logout should always succeed locally
   }
 };
