@@ -198,23 +198,34 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = useCallback(async () => {
     try {
-      // Get CSRF token from cookie
+      // Get CSRF token from cookie (optional for cross-origin)
       const csrfToken = document.cookie
         .split('; ')
         .find(row => row.startsWith('csrf_token='))
         ?.split('=')[1];
 
-      await fetch(`${API_URL}/api/auth/logout`, {
+      // Attempt to logout on backend
+      const response = await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         headers: {
-          'X-CSRF-Token': csrfToken || ''
+          'X-CSRF-Token': csrfToken || '' // Send token if available
         },
         credentials: 'include'
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.warn('⚠️  Backend logout failed:', errorData);
+        console.warn('   Clearing local state anyway to ensure user is logged out');
+      } else {
+        console.log('✅ Logout successful');
+      }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('❌ Logout error:', error);
+      console.warn('   Clearing local state anyway to ensure user is logged out');
     } finally {
-      // Always clear local state
+      // Always clear local state, even if backend call fails
+      // This ensures the user is logged out from the UI perspective
       dispatch({
         type: 'AUTH_STATE_CHANGED',
         payload: null

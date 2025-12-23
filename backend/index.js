@@ -26,7 +26,6 @@ app.use(helmet({
 app.set('trust proxy', 1);
 
 // CORS configuration
-// CORS configuration
 app.use(cors({
     origin: (origin, callback) => {
         const allowedOrigins = [
@@ -34,13 +33,23 @@ app.use(cors({
             'http://localhost:3000',
             'http://127.0.0.1:3000'
         ];
+
+        // Log CORS configuration on startup
+        if (!app.get('cors_logged')) {
+            console.log('🔒 CORS Configuration:');
+            console.log('   Allowed origins:', allowedOrigins);
+            console.log('   Environment:', NODE_ENV);
+            app.set('cors_logged', true);
+        }
+
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+        if (allowedOrigins.indexOf(origin) !== -1 || NODE_ENV !== 'production') {
             callback(null, true);
         } else {
-            console.log('Blocked by CORS:', origin);
+            console.warn('❌ Blocked by CORS:', origin);
+            console.warn('   Allowed origins:', allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },
