@@ -25,6 +25,7 @@
         "react-pdf": "^10.2.0",
         "react-router-dom": "^7.9.4",
         "react-scripts": "5.0.1",
+        "react-toastify": "^11.0.5",
         "string-similarity": "^4.0.4",
         "web-vitals": "^2.1.4",
         "xlsx": "^0.18.5"

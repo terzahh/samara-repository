@@ -144,3 +144,29 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ## License
 
 See LICENSE file for details.
+
+
+
+
+-- Create OTPs table for password reset functionality
+CREATE TABLE IF NOT EXISTS otps (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    otp_hash VARCHAR(64) NOT NULL,
+    type VARCHAR(50) NOT NULL DEFAULT 'password_reset',
+    used BOOLEAN DEFAULT FALSE,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    used_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_otps_email_type ON otps(email, type);
+CREATE INDEX IF NOT EXISTS idx_otps_expires_at ON otps(expires_at);
+
+-- Enable RLS
+ALTER TABLE otps ENABLE ROW LEVEL SECURITY;
+
+-- Service role policy
+CREATE POLICY "Service role can manage OTPs" ON otps
+    FOR ALL USING (auth.role() = 'service_role');

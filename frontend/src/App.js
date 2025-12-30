@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ResearchProvider } from './context/ResearchContext';
 import Header from './components/common/Header/Header';
@@ -8,7 +10,7 @@ import ScrollToTop from './components/common/ScrollToTop/ScrollToTop';
 import LandingPage from './pages/LandingPage/LandingPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import SignupPage from './pages/SignupPage/SignupPage';
-import PasswordResetPage from './pages/PasswordResetPage/PasswordResetPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import AdminPage from './pages/AdminPage/AdminPage';
 import DepartmentPage from './pages/DepartmentPage/DepartmentPage';
@@ -95,7 +97,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<PasswordResetPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="*" element={
               <div className="container text-center py-5">
@@ -120,7 +122,7 @@ const AppContent = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/forgot-password" element={<PasswordResetPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/browse" element={<BrowsePage />} />
         <Route path="/research/:id" element={<ResearchDetailPage />} />
@@ -170,6 +172,17 @@ function App() {
       <ResearchProvider>
         <Router>
           <AppContent />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </Router>
       </ResearchProvider>
     </AuthProvider>

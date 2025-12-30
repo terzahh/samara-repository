@@ -13,6 +13,7 @@
         "express": "^5.2.1",
         "express-rate-limit": "^8.2.1",
         "helmet": "^8.1.0",
+        "nodemailer": "^7.0.12",
         "pdf-parse": "^2.4.5",
         "string-similarity": "^4.0.4",
         "uuid": "^13.0.0"

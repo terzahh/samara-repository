@@ -4,6 +4,8 @@ const { createSession } = require('./sessionService');
 const { generateDeviceSignature } = require('../utils/fingerprint');
 const { logActivity } = require('./auditService');
 const { isValidEmail, validatePassword } = require('../utils/validation');
+const { sendPasswordResetOTP } = require('./emailService');
+const { generateOTP, storeOTP, verifyOTP } = require('./otpService');
 
 const SALT_ROUNDS = 10;
 
@@ -360,9 +362,162 @@ async function changePassword(userId, currentPassword, newPassword) {
     return { success: true };
 }
 
+/**
+ * Request password reset - send OTP to email
+ * @param {string} email - User email
+ * @param {string} ipAddress - IP address
+ * @returns {Promise<Object>} { success, message }
+ */
+async function requestPasswordReset(email, ipAddress) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (!isValidEmail(normalizedEmail)) {
+        throw new Error('Invalid email format');
+    }
+
+    // Check if user exists
+    const { data: user, error } = await supabaseAdmin
+        .from('users')
+        .select('id, email, display_name')
+        .eq('email', normalizedEmail)
+        .single();
+
+    if (error || !user) {
+        // Don't reveal if user exists - always return success
+        await logActivity(
+            null,
+            null,
+            'password_reset_requested',
+            'warning',
+            ipAddress,
+            null,
+            null,
+            { email: normalizedEmail, reason: 'user_not_found' }
+        );
+        return { success: true, message: 'If the email exists, an OTP has been sent' };
+    }
+
+    // Generate and store OTP
+    const otp = generateOTP();
+    await storeOTP(normalizedEmail, otp, 'password_reset');
+
+    // Send email
+    try {
+        await sendPasswordResetOTP(normalizedEmail, otp, user.display_name);
+        
+        await logActivity(
+            user.id,
+            null,
+            'password_reset_requested',
+            'info',
+            ipAddress,
+            null,
+            null,
+            { email: normalizedEmail }
+        );
+
+        return { success: true, message: 'OTP sent to your email' };
+    } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        throw new Error('Failed to send reset email. Please try again later.');
+    }
+}
+
+/**
+ * Reset password with OTP
+ * @param {string} email - User email
+ * @param {string} otp - 6-digit OTP
+ * @param {string} newPassword - New password
+ * @param {string} ipAddress - IP address
+ * @returns {Promise<Object>} { success }
+ */
+async function resetPasswordWithOTP(email, otp, newPassword, ipAddress) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Validate inputs
+    if (!isValidEmail(normalizedEmail)) {
+        throw new Error('Invalid email format');
+    }
+
+    if (!otp || otp.length !== 6) {
+        throw new Error('Invalid OTP format');
+    }
+
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+        const error = new Error('Password validation failed');
+        error.name = 'ValidationError';
+        error.details = passwordValidation.errors;
+        throw error;
+    }
+
+    // Verify OTP
+    const otpVerification = await verifyOTP(normalizedEmail, otp, 'password_reset');
+    if (!otpVerification.valid) {
+        await logActivity(
+            null,
+            null,
+            'password_reset_failed',
+            'warning',
+            ipAddress,
+            null,
+            null,
+            { email: normalizedEmail, reason: otpVerification.reason }
+        );
+        
+        if (otpVerification.reason === 'expired') {
+            throw new Error('OTP has expired. Please request a new one.');
+        }
+        throw new Error('Invalid OTP');
+    }
+
+    // Get user
+    const { data: user, error: userError } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .single();
+
+    if (userError || !user) {
+        throw new Error('User not found');
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update password
+    const { error: updateError } = await supabaseAdmin
+        .from('users')
+        .update({ password_hash: passwordHash })
+        .eq('id', user.id);
+
+    if (updateError) {
+        throw new Error('Failed to update password');
+    }
+
+    // Revoke all existing sessions for security
+    const { revokeAllUserSessions } = require('./sessionService');
+    await revokeAllUserSessions(user.id, 'password_reset');
+
+    await logActivity(
+        user.id,
+        null,
+        'password_reset_success',
+        'info',
+        ipAddress,
+        null,
+        null,
+        { email: normalizedEmail }
+    );
+
+    return { success: true };
+}
+
 module.exports = {
     loginUser,
     registerUser,
     adminResetPassword,
-    changePassword
+    changePassword,
+    requestPasswordReset,
+    resetPasswordWithOTP
 };

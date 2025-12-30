@@ -117,6 +117,9 @@ const server = app.listen(PORT, () => {
     console.log('  POST /api/auth/refresh');
     console.log('  GET  /api/auth/me');
     console.log('  POST /api/auth/ping');
+    console.log('  POST /api/auth/forgot-password');
+    console.log('  POST /api/auth/verify-otp');
+    console.log('  POST /api/auth/reset-password');
     console.log('=====================================');
     console.log('');
 });

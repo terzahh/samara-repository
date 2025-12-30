@@ -67,9 +67,25 @@ const apiLimiter = rateLimit({
     legacyHeaders: false
 });
 
+/**
+ * Rate limiter for password reset endpoints
+ * 3 attempts per 15 minutes per IP
+ */
+const passwordResetLimiter = rateLimit({
+    windowMs: RATE_LIMIT_WINDOW_MS,
+    max: 5,
+    message: {
+        error: 'Too many password reset attempts',
+        message: `Please try again after ${RATE_LIMIT_WINDOW_MS / 60000} minutes`
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 module.exports = {
     loginLimiter,
     registerLimiter,
     refreshLimiter,
-    apiLimiter
+    apiLimiter,
+    passwordResetLimiter
 };
