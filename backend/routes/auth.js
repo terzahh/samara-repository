@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { loginUser, registerUser, adminResetPassword, changePassword } = require('../services/authService');
+const { loginUser, registerUser, adminResetPassword, changePassword, requestPasswordReset, resetPasswordWithOTP } = require('../services/authService');
 const { refreshSession, revokeSession, updateActivity } = require('../services/sessionService');
 const { setAuthCookies, clearAuthCookies, getSessionFromCookies } = require('../utils/cookies');
 const { generateDeviceSignature, validateFingerprint } = require('../utils/fingerprint');
 const { logActivity } = require('../services/auditService');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { csrfProtection } = require('../middleware/csrf');
-const { loginLimiter, registerLimiter, refreshLimiter } = require('../middleware/rateLimit');
+const { loginLimiter, registerLimiter, refreshLimiter, passwordResetLimiter } = require('../middleware/rateLimit');
 
 /**
  * POST /api/auth/login
@@ -250,6 +250,78 @@ router.post('/change-password', requireAuth, csrfProtection, async (req, res, ne
         await changePassword(req.user.id, currentPassword, newPassword);
 
         res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset OTP
+ */
+router.post('/forgot-password', passwordResetLimiter, async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const ipAddress = req.ip || req.connection.remoteAddress;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const result = await requestPasswordReset(email, ipAddress);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/auth/verify-otp
+ * Verify OTP without resetting password
+ */
+router.post('/verify-otp', passwordResetLimiter, async (req, res, next) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({ 
+                error: 'Email and OTP are required' 
+            });
+        }
+
+        const { verifyOTP } = require('../services/otpService');
+        const otpVerification = await verifyOTP(email, otp, 'password_reset', false);
+        
+        if (!otpVerification.valid) {
+            if (otpVerification.reason === 'expired') {
+                return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
+            }
+            return res.status(400).json({ error: 'Invalid OTP' });
+        }
+
+        res.json({ valid: true, message: 'OTP verified successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password with OTP
+ */
+router.post('/reset-password', passwordResetLimiter, async (req, res, next) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        const ipAddress = req.ip || req.connection.remoteAddress;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ 
+                error: 'Email, OTP, and new password are required' 
+            });
+        }
+
+        await resetPasswordWithOTP(email, otp, newPassword, ipAddress);
+        res.json({ message: 'Password reset successfully' });
     } catch (error) {
         next(error);
     }
