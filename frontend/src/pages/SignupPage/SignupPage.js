@@ -6,24 +6,24 @@ import './SignupPage.css';
 const SignupPage = () => {
   return (
     <div className="signup-page">
-      
+
       <section className="signup-section py-5">
         <Container>
           <Row className="justify-content-center">
-            <Col md={6}>
+            <Col md={10} lg={8}>
               <div className="signup-container">
                 <div className="text-center mb-4">
                   <h2 className="signup-title">Create Account</h2>
                   <p className="signup-subtitle">Join the Samara University research community</p>
                 </div>
-                
+
                 <SignupForm />
               </div>
             </Col>
           </Row>
         </Container>
       </section>
-      
+
     </div>
   );
 };

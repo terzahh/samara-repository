@@ -18,6 +18,14 @@ const CollegesDepartmentsPage = () => {
   const [expandedCollege, setExpandedCollege] = useState(null);
   const [departmentMap, setDepartmentMap] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedButtons, setExpandedButtons] = useState({});
+
+  const toggleButtons = (collegeId) => {
+    setExpandedButtons(prev => ({
+      ...prev,
+      [collegeId]: !prev[collegeId]
+    }));
+  };
 
   // Normalize department names consistently to avoid mismatches
   const normalizeName = (name) => {
@@ -243,105 +251,132 @@ const CollegesDepartmentsPage = () => {
                     </div>
                   </Accordion.Header>
                   <Accordion.Body>
-                    <div className="mb-2">
-                      <Link to={`/colleges/${college.id}`} className="btn btn-sm btn-outline-primary me-2">Open College Page</Link>
+                    {/* Expandable Section */}
+                    <div className="college-actions-section mb-3">
+                      <button
+                        className="toggle-actions-btn"
+                        onClick={() => toggleButtons(college.id)}
+                        aria-expanded={expandedButtons[college.id]}
+                      >
+                        {expandedButtons[college.id] ? 'Hide Details' : 'Show Details'}
+                      </button>
+
+                      {expandedButtons[college.id] && (
+                        <>
+                          {/* Undergraduate Programs */}
+                          {college.departments && college.departments.length > 0 && (
+                            <div className="programs-section-compact mb-3">
+                              <h6 className="section-title">
+                                <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
+                                Undergraduate Programs
+                              </h6>
+                              <Row>
+                                {college.departments
+                                  .filter(dept => departmentMatchesSearch(dept.name))
+                                  .map((dept, index) => {
+                                    const deptData = findDepartmentByName(dept.name);
+                                    const count = getResearchCount(dept.name);
+
+                                    return (
+                                      <Col md={6} lg={4} key={index} className="mb-3">
+                                        <Card className="department-card h-100">
+                                          <Card.Body>
+                                            <Card.Title as="h6" className="department-name">
+                                              {dept.name}
+                                            </Card.Title>
+                                            {deptData ? (
+                                              <>
+                                                <p className="research-count mb-2">
+                                                  <Badge bg="primary">{count} Research Items</Badge>
+                                                </p>
+                                                <Link
+                                                  to={`/browse?department=${deptData.id}`}
+                                                  className="btn btn-sm btn-outline-primary"
+                                                >
+                                                  View Research
+                                                </Link>
+                                              </>
+                                            ) : (
+                                              <p className="text-muted small mb-0">
+                                                No research available yet
+                                              </p>
+                                            )}
+                                          </Card.Body>
+                                        </Card>
+                                      </Col>
+                                    );
+                                  })}
+                              </Row>
+                            </div>
+                          )}
+
+                          {/* Postgraduate Programs - Placeholder */}
+                          <div className="programs-section-compact mb-3">
+                            <h6 className="section-title">
+                              <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
+                              Postgraduate Programs
+                            </h6>
+                            <p className="text-muted small mb-0">
+                              Postgraduate programs information coming soon.
+                            </p>
+                          </div>
+
+                        </>
+                      )}
                     </div>
-                    {/* Visit college website button */}
-                    {college.website && (
-                      <div className="mb-3">
+
+                    {/* Action Buttons - Always Visible */}
+                    <div className="actions-buttons-container mb-4">
+                      <Link
+                        to={`/colleges/${college.id}`}
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        Open College Page
+                      </Link>
+                      {college.website && (
                         <a
                           href={college.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-sm btn-outline-primary me-2"
+                          className="btn btn-sm btn-outline-primary"
                         >
                           Visit College Website
                         </a>
-                      </div>
-                    )}
-                    {/* Contact Information */}
+                      )}
+                    </div>
+
+                    {/* Contact Information - Always Visible */}
                     {college.contact && (
-                      <Card className="contact-card mb-4">
-                        <Card.Body>
-                          <h5 className="mb-3">
-                            <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
-                            Contact Information
-                          </h5>
-                          <Row>
-                            <Col md={6}>
-                              <p className="mb-2">
-                                <strong>{college.contact.title}</strong>
-                              </p>
-                              <p className="mb-2">
-                                <strong>Name:</strong> {college.contact.name}
-                              </p>
-                            </Col>
-                            <Col md={6}>
-                              <p className="mb-2">
-                                <FontAwesomeIcon icon={faEnvelope} className="me-2" />
-                                <strong>Email:</strong>{' '}
-                                <a href={`mailto:${college.contact.email}`}>
-                                  {college.contact.email}
-                                </a>
-                              </p>
-                              <p className="mb-0">
-                                <FontAwesomeIcon icon={faPhone} className="me-2" />
-                                <strong>Phone:</strong> {college.contact.phone}
-                              </p>
-                            </Col>
-                          </Row>
-                        </Card.Body>
-                      </Card>
-                    )}
-
-                    {/* Undergraduate Programs */}
-                    {college.departments && college.departments.length > 0 && (
-                      <div className="programs-section mb-4">
-                        <h4 className="programs-title mb-3">
+                      <div className="contact-info-compact">
+                        <h6 className="contact-title">
                           <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
-                          Undergraduate Programs
-                        </h4>
+                          Contact Information
+                        </h6>
                         <Row>
-                          {college.departments
-                            .filter(dept => departmentMatchesSearch(dept.name))
-                            .map((dept, index) => {
-                              const deptData = findDepartmentByName(dept.name);
-                              const count = getResearchCount(dept.name);
-
-                              return (
-                                <Col md={6} lg={4} key={index} className="mb-3">
-                                  <Card className="department-card h-100">
-                                    <Card.Body>
-                                      <Card.Title as="h5" className="department-name">
-                                        {dept.name}
-                                      </Card.Title>
-                                      {deptData ? (
-                                        <>
-                                          <p className="research-count mb-2">
-                                            <Badge bg="primary">{count} Research Items</Badge>
-                                          </p>
-                                          <Link
-                                            to={`/browse?department=${deptData.id}`}
-                                            className="btn btn-sm btn-outline-primary"
-                                          >
-                                            View Research
-                                          </Link>
-                                        </>
-                                      ) : (
-                                        <p className="text-muted small mb-0">
-                                          No research available yet
-                                        </p>
-                                      )}
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              );
-                            })}
+                          <Col md={6}>
+                            <p className="mb-2">
+                              <strong>{college.contact.title}</strong>
+                            </p>
+                            <p className="mb-2">
+                              <strong>Name:</strong> {college.contact.name}
+                            </p>
+                          </Col>
+                          <Col md={6}>
+                            <p className="mb-2">
+                              <FontAwesomeIcon icon={faEnvelope} className="me-2" />
+                              <strong>Email:</strong>{' '}
+                              <a href={`mailto:${college.contact.email}`}>
+                                {college.contact.email}
+                              </a>
+                            </p>
+                            <p className="mb-0">
+                              <FontAwesomeIcon icon={faPhone} className="me-2" />
+                              <strong>Phone:</strong> {college.contact.phone}
+                            </p>
+                          </Col>
                         </Row>
                       </div>
                     )}
-
-                    {/* Postgraduate section removed as requested */}
                   </Accordion.Body>
                 </Accordion.Item>
               ))}

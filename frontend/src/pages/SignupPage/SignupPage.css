@@ -1,37 +1,51 @@
 .signup-page {
-  min-height: 100vh;
+  height: calc(100vh - 76px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .signup-section {
   flex-grow: 1;
   background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Center vertically */
+  padding: 20px !important;
+  /* Minimal padding */
+}
+
+.signup-page footer {
+  display: none;
 }
 
 .signup-container {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  padding: 15px 30px;
+  /* Further reduced vertical padding */
+  width: 100%;
 }
 
 .signup-title {
   color: #2D7BA8;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
+  /* Removed margin */
+  font-size: 1.3rem;
+  /* Further reduced title */
 }
 
 .signup-subtitle {
   color: #6c757d;
-  margin-bottom: 30px;
+  margin-bottom: 5px;
+  /* Tightened margin */
+  font-size: 0.85rem;
 }
 
 .signup-container a {
   color: #2D7BA8;
   text-decoration: none;
-}
-
-.signup-container a:hover {
-  /* Underline effect is handled by global App.css a::after */
 }

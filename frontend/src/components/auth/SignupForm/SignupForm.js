@@ -86,8 +86,9 @@ const SignupForm = () => {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (!validatePassword(formData.password)) {
-      newErrors.password = 'Password must be at least 6 characters';
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.valid) {
+      newErrors.password = passwordValidation.errors.join('. ');
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -159,45 +160,45 @@ const SignupForm = () => {
   return (
     <Card className="signup-form-card">
       <Card.Body>
-        <Card.Title className="text-center mb-4">Sign Up</Card.Title>
-
-        {error && <Alert variant="danger">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
+        {error && <Alert variant="danger" className="mb-2 py-1 footer-text">{error}</Alert>}
+        {success && <Alert variant="success" className="mb-2 py-1 footer-text">{success}</Alert>}
 
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Registration Type</Form.Label>
-            <div>
+          <Form.Group className="mb-2">
+            <Form.Label className="fw-bold text-primary small mb-1">Registration Type</Form.Label>
+            <div className="d-flex gap-4">
               <Form.Check
                 type="radio"
-                label="Register as Authenticated User"
+                label="Authenticated User"
                 name="registrationType"
                 id="registration-user"
                 value="user"
                 checked={formData.registrationType === 'user'}
                 onChange={(e) => setFormData({ ...formData, registrationType: e.target.value, departmentId: '' })}
-                className="mb-2"
+                className="mb-1 small"
               />
               <Form.Check
                 type="radio"
-                label="Register as Department Head (Requires Admin Approval)"
+                label="Department Head"
                 name="registrationType"
                 id="registration-dept-head"
                 value="department_head"
                 checked={formData.registrationType === 'department_head'}
                 onChange={(e) => setFormData({ ...formData, registrationType: e.target.value })}
+                className="mb-1 small"
               />
             </div>
           </Form.Group>
 
           {formData.registrationType === 'department_head' && (
-            <Form.Group className="mb-3" controlId="departmentId">
-              <Form.Label>Department</Form.Label>
+            <Form.Group className="mb-2" controlId="departmentId">
+              <Form.Label className="small mb-1">Department</Form.Label>
               <Form.Select
                 name="departmentId"
                 value={formData.departmentId}
                 onChange={handleChange}
                 isInvalid={!!errors.departmentId}
+                size="sm"
               >
                 <option value="">Select Department</option>
                 {departments.map((dept, idx) => (
@@ -209,68 +210,79 @@ const SignupForm = () => {
               </Form.Control.Feedback>
             </Form.Group>
           )}
-          <Form.Group className="mb-3" controlId="displayName">
-            <Form.Label>Full Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter your full name"
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleChange}
-              isInvalid={!!errors.displayName}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.displayName}
-            </Form.Control.Feedback>
-          </Form.Group>
 
-          <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              isInvalid={!!errors.email}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.email}
-            </Form.Control.Feedback>
-          </Form.Group>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-2" controlId="displayName">
+                <Form.Label className="small mb-1">Full Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your full name"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleChange}
+                  isInvalid={!!errors.displayName}
+                  size="sm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.displayName}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-          <Form.Group className="mb-3" controlId="password">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              isInvalid={!!errors.password}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.password}
-            </Form.Control.Feedback>
-          </Form.Group>
+              <Form.Group className="mb-2" controlId="email">
+                <Form.Label className="small mb-1">Email address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  isInvalid={!!errors.email}
+                  size="sm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3" controlId="confirmPassword">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Confirm password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              isInvalid={!!errors.confirmPassword}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.confirmPassword}
-            </Form.Control.Feedback>
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group className="mb-2" controlId="password">
+                <Form.Label className="small mb-1">Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  isInvalid={!!errors.password}
+                  size="sm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-          <div className="d-grid gap-2">
-            <Button variant="primary" type="submit" disabled={loading}>
+              <Form.Group className="mb-2" controlId="confirmPassword">
+                <Form.Label className="small mb-1">Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Confirm password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  isInvalid={!!errors.confirmPassword}
+                  size="sm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirmPassword}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <div className="d-grid gap-2 mt-3">
+            <Button variant="primary" type="submit" disabled={loading} size="sm">
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </div>

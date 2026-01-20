@@ -45,8 +45,9 @@ const ResearchCard = ({ research }) => {
   };
 
   return (
-    <Card className="research-card h-100">
-      <Card.Header className="d-flex justify-content-between align-items-center">
+    <Card className="research-card book-card h-100">
+      {/* Book Cover/Spine - Always Visible */}
+      <Card.Header className="book-header d-flex justify-content-between align-items-center">
         <Badge bg="info" className="type-badge">
           {getResearchTypeLabel(research.type)}
         </Badge>
@@ -55,7 +56,8 @@ const ResearchCard = ({ research }) => {
         </Badge>
       </Card.Header>
 
-      <Card.Body className="d-flex flex-column">
+      {/* Closed Book Content - Always Visible */}
+      <Card.Body className="book-closed-content">
         <Card.Title as="h5" className="research-title">
           <Link to={`/research/${research.id}`} className="research-link">
             {truncateText(research.title, 60)}
@@ -66,7 +68,16 @@ const ResearchCard = ({ research }) => {
           By {research.author}
         </Card.Subtitle>
 
-        <Card.Text className="research-abstract flex-grow-1">
+        <div className="research-department">
+          <small className="text-muted">
+            {research.departments?.name}
+          </small>
+        </div>
+      </Card.Body>
+
+      {/* Open Book Content - Revealed on Hover */}
+      <div className="book-open-content">
+        <Card.Text className="research-abstract">
           <span
             onClick={() => setIsExpanded(!isExpanded)}
             style={{ cursor: 'pointer' }}
@@ -83,12 +94,11 @@ const ResearchCard = ({ research }) => {
 
         <div className="research-meta">
           <small className="text-muted">
-            {research.departments?.name}
             {(() => {
               const keywords = research.keywords || '';
               const streamMatch = keywords.match(/stream:([^,]+)/);
               if (streamMatch) {
-                return <span> • {streamMatch[1].trim()}</span>;
+                return <span>{streamMatch[1].trim()}</span>;
               }
               return null;
             })()}
@@ -102,43 +112,43 @@ const ResearchCard = ({ research }) => {
               }
               return null;
             })()}
-            • {research.year}
+            {research.year && <span> • {research.year}</span>}
           </small>
         </div>
-      </Card.Body>
 
-      <Card.Footer>
-        <small className="text-muted">
-          {formatDate(research.created_at)}
-        </small>
+        <Card.Footer className="book-footer">
+          <small className="text-muted">
+            {formatDate(research.created_at)}
+          </small>
 
-        <div className="research-actions">
-          <Button
-            as={Link}
-            to={`/research/${research.id}`}
-            variant="outline-primary"
-            size="sm"
-            disabled={downloading}
-          >
-            <FontAwesomeIcon icon={faEye} className="me-1" />
-            View
-          </Button>
+          <div className="research-actions">
+            <Button
+              as={Link}
+              to={`/research/${research.id}`}
+              variant="outline-primary"
+              size="sm"
+              disabled={downloading}
+            >
+              <FontAwesomeIcon icon={faEye} className="me-1" />
+              View
+            </Button>
 
-          {research.file_url && (
-            (research.access_level === 'public' || (research.access_level === 'restricted' && isAuthenticated)) && (
-              <Button
-                variant="outline-success"
-                size="sm"
-                onClick={handleDownload}
-                disabled={downloading}
-              >
-                <FontAwesomeIcon icon={faDownload} className="me-1" />
-                {downloading ? 'Downloading...' : 'Download'}
-              </Button>
-            )
-          )}
-        </div>
-      </Card.Footer>
+            {research.file_url && (
+              (research.access_level === 'public' || (research.access_level === 'restricted' && isAuthenticated)) && (
+                <Button
+                  variant="outline-success"
+                  size="sm"
+                  onClick={handleDownload}
+                  disabled={downloading}
+                >
+                  <FontAwesomeIcon icon={faDownload} className="me-1" />
+                  {downloading ? 'Downloading...' : 'Download'}
+                </Button>
+              )
+            )}
+          </div>
+        </Card.Footer>
+      </div>
     </Card>
   );
 };

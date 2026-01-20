@@ -1,37 +1,48 @@
 .login-page {
-  min-height: 100vh;
+  height: calc(100vh - 76px);
+  /* Subtracting approx navbar height */
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  /* Enforce no scroll */
 }
 
 .login-section {
   flex-grow: 1;
   background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  /* Center vertically */
+  padding: 0 !important;
+  /* Override py-5 */
 }
 
 .login-container {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  padding: 30px 40px;
+  /* Reduced vertical padding */
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
 }
 
 .login-title {
   color: #2D7BA8;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  /* Reduced margin */
 }
 
 .login-subtitle {
   color: #6c757d;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  /* Reduced margin */
+  font-size: 0.95rem;
 }
 
 .login-container a {
   color: #2D7BA8;
   text-decoration: none;
-}
-
-.login-container a:hover {
-  /* Underline effect is handled by global App.css a::after */
 }

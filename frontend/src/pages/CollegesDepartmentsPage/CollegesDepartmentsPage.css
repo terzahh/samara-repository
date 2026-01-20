@@ -54,6 +54,7 @@
 .colleges-accordion .accordion-button.collapsed .chev {
   transform: rotate(0deg);
 }
+
 .colleges-accordion .accordion-button:not(.collapsed) .chev {
   transform: rotate(180deg);
 }
@@ -177,11 +178,11 @@
   .page-title {
     font-size: 2rem;
   }
-  
+
   .college-name {
     font-size: 1.1rem;
   }
-  
+
   .department-card,
   .program-card {
     margin-bottom: 15px;
@@ -205,7 +206,7 @@
 
 .colleges-accordion .accordion-item:hover {
   transform: translateY(-6px);
-  box-shadow: 0 14px 36px rgba(26,93,130,0.06);
+  box-shadow: 0 14px 36px rgba(26, 93, 130, 0.06);
 }
 
 .college-name {
@@ -223,6 +224,252 @@
 
 .browse-all-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 18px 48px rgba(45,123,168,0.12);
+  box-shadow: 0 18px 48px rgba(45, 123, 168, 0.12);
 }
 
+/* ========== EXPANDABLE BUTTONS SECTION ========== */
+.college-actions-section {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(45, 123, 168, 0.03), rgba(74, 159, 212, 0.02));
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.college-actions-section:hover {
+  background: linear-gradient(135deg, rgba(45, 123, 168, 0.05), rgba(74, 159, 212, 0.03));
+  box-shadow: 0 2px 8px rgba(45, 123, 168, 0.08);
+}
+
+.toggle-actions-btn {
+  background: linear-gradient(135deg, #2D7BA8, #4a9fd4);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(45, 123, 168, 0.2);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-actions-btn::after {
+  content: '▼';
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+}
+
+.toggle-actions-btn[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.toggle-actions-btn:hover {
+  background: linear-gradient(135deg, #1a5d82, #2D7BA8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 123, 168, 0.3);
+}
+
+.toggle-actions-btn:active {
+  transform: translateY(0);
+}
+
+/* Buttons Container with Flexbox */
+.actions-buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+  animation: slideDown 0.3s ease-out;
+  flex-wrap: wrap;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.actions-buttons-container .btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actions-buttons-container .btn-outline-primary {
+  border: 2px solid #2D7BA8;
+  color: #2D7BA8;
+  background: white;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.actions-buttons-container .btn-outline-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2D7BA8, #4a9fd4);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.actions-buttons-container .btn-outline-primary:hover {
+  color: white;
+  border-color: #2D7BA8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 123, 168, 0.25);
+}
+
+.actions-buttons-container .btn-outline-primary:hover::before {
+  left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .actions-buttons-container {
+    flex-direction: column;
+  }
+
+  .actions-buttons-container .btn {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .toggle-actions-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========== COMPACT CONTACT INFORMATION ========== */
+.contact-info-compact {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(248, 249, 250, 0.8), rgba(255, 255, 255, 0.9));
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  animation: slideDown 0.3s ease-out;
+}
+
+.contact-info-compact .contact-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(45, 123, 168, 0.2);
+}
+
+.contact-info-compact p {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.contact-info-compact strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.contact-info-compact a {
+  color: #2D7BA8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-info-compact a:hover {
+  color: #1a5d82;
+}
+
+.contact-info-compact .svg-inline--fa {
+  color: #2D7BA8;
+  width: 14px;
+}
+
+@media (max-width: 768px) {
+  .contact-info-compact {
+    padding: 12px;
+  }
+
+  .contact-info-compact p {
+    font-size: 0.8rem;
+  }
+}
+
+/* ========== COMPACT PROGRAMS SECTION ========== */
+.programs-section-compact {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(45, 123, 168, 0.02), rgba(74, 159, 212, 0.01));
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  animation: slideDown 0.3s ease-out;
+}
+
+.programs-section-compact .section-title {
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(45, 123, 168, 0.2);
+}
+
+.programs-section-compact .department-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.programs-section-compact .department-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.programs-section-compact .department-name {
+  font-size: 0.9rem;
+  color: #2D7BA8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .programs-section-compact {
+    padding: 12px;
+  }
+
+  .programs-section-compact .section-title {
+    font-size: 0.9rem;
+  }
+
+  .programs-section-compact .department-name {
+    font-size: 0.85rem;
+  }
+}

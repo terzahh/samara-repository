@@ -4,7 +4,36 @@ export const validateEmail = (email) => {
 };
 
 export const validatePassword = (password) => {
-  return password.length >= 6;
+  if (!password || typeof password !== 'string') {
+    return { valid: false, errors: ['Password is required'] };
+  }
+
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters');
+  }
+
+  if (password.length > 128) {
+    errors.push('Password must be less than 128 characters');
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
 };
 
 export const validateRequired = (value) => {
@@ -16,37 +45,37 @@ export const validateRequired = (value) => {
 
 export const validateResearchForm = (formData) => {
   const errors = {};
-  
+
   if (!validateRequired(formData.title)) {
     errors.title = 'Title is required';
   }
-  
+
   if (!validateRequired(formData.author)) {
     errors.author = 'Author is required';
   }
-  
+
   if (!validateRequired(formData.department_id)) {
     errors.department = 'Department is required';
   }
-  
+
   if (!validateRequired(formData.type)) {
     errors.type = 'Type is required';
   }
-  
+
   if (!validateRequired(formData.year)) {
     errors.year = 'Year is required';
   } else if (isNaN(formData.year) || formData.year < 1900 || formData.year > new Date().getFullYear() + 1) {
     errors.year = 'Please enter a valid year';
   }
-  
+
   if (!validateRequired(formData.abstract)) {
     errors.abstract = 'Abstract is required';
   }
-  
+
   if (!validateRequired(formData.keywords)) {
     errors.keywords = 'Keywords are required';
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors
