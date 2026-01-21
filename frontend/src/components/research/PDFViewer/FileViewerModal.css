@@ -4,7 +4,25 @@
 
 .pdf-viewer-body {
     overflow-y: auto;
-    min-height: 100vh;
+    /* Remove forcing min-height 100vh here as it causes double scrolling with modal */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-toolbar {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .pdf-container {
@@ -13,7 +31,12 @@
     background-color: white;
     position: relative;
     overflow: hidden;
-    /* Needed for blur effect to stay within container */
+    margin: 1rem auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 95%;
+    /* Ensure it doesn't overflow screen width */
+    width: fit-content;
+    /* Hug content but respect max-width */
 }
 
 /* Page styling for PDF */
@@ -41,12 +64,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    align-items: center;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.1);
-    /* Slight white tint */
     backdrop-filter: blur(1px);
-    /* Additional subtle blur */
 }
 
 .pdf-restricted-message {
@@ -75,4 +95,25 @@
 .docx-content p {
     margin-bottom: 1rem;
     line-height: 1.6;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 576px) {
+    .pdf-toolbar {
+        padding: 0.25rem;
+    }
+
+    .pdf-restricted-message {
+        padding: 1.5rem;
+        width: 90%;
+    }
+
+    .pdf-restricted-message h3 {
+        font-size: 1.25rem;
+    }
+
+    .docx-content {
+        padding: 1.5rem !important;
+        /* Override inline style p-5 */
+    }
 }
